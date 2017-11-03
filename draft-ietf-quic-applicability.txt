@@ -5,7 +5,7 @@
 Network Working Group                                      M. Kuehlewind
 Internet-Draft                                               B. Trammell
 Intended status: Informational                                ETH Zurich
-Expires: April 23, 2018                                 October 20, 2017
+Expires: May 7, 2018                                   November 03, 2017
 
 
               Applicability of the QUIC Transport Protocol
@@ -34,7 +34,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 23, 2018.
+   This Internet-Draft will expire on May 7, 2018.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Kuehlewind & Trammell    Expires April 23, 2018                 [Page 1]
+Kuehlewind & Trammell      Expires May 7, 2018                  [Page 1]
 
-Internet-Draft             QUIC Applicability               October 2017
+Internet-Draft             QUIC Applicability              November 2017
 
 
 Table of Contents
@@ -69,7 +69,7 @@ Table of Contents
      3.3.  Session resumption versus Keep-alive  . . . . . . . . . .   4
    4.  Use of Streams  . . . . . . . . . . . . . . . . . . . . . . .   4
      4.1.  Stream versus Flow Multiplexing . . . . . . . . . . . . .   5
-     4.2.  Paketization and latency  . . . . . . . . . . . . . . . .   6
+     4.2.  Packetization and latency . . . . . . . . . . . . . . . .   6
      4.3.  Prioritization  . . . . . . . . . . . . . . . . . . . . .   6
    5.  Graceful connection closure . . . . . . . . . . . . . . . . .   6
    6.  Information exposure and the Connection ID  . . . . . . . . .   7
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Kuehlewind & Trammell    Expires April 23, 2018                 [Page 2]
+Kuehlewind & Trammell      Expires May 7, 2018                  [Page 2]
 
-Internet-Draft             QUIC Applicability               October 2017
+Internet-Draft             QUIC Applicability              November 2017
 
 
 1.1.  Notational Conventions
@@ -165,9 +165,9 @@ Internet-Draft             QUIC Applicability               October 2017
 
 
 
-Kuehlewind & Trammell    Expires April 23, 2018                 [Page 3]
+Kuehlewind & Trammell      Expires May 7, 2018                  [Page 3]
 
-Internet-Draft             QUIC Applicability               October 2017
+Internet-Draft             QUIC Applicability              November 2017
 
 
 3.1.  Thinking in Zero RTT
@@ -175,7 +175,7 @@ Internet-Draft             QUIC Applicability               October 2017
    A transport protocol that provides 0-RTT connection establishment to
    recently contacted servers is qualitatively different than one that
    does not from the point of view of the application using it.
-   Relative tradeoffs between the cost of closing and reopening a
+   Relative trade-offs between the cost of closing and reopening a
    connection and trying to keep it open are different; see Section 3.3.
 
    Applications must be slightly rethought in order to make best use of
@@ -183,7 +183,7 @@ Internet-Draft             QUIC Applicability               October 2017
    divided into idempotent and non-idempotent operations, as only
    idempotent operations may appear in 0-RTT packets.  This implies that
    the interface between the application and transport layer exposes
-   idempotence either ecplicitly or implicitly.
+   idempotence either explicitly or implicitly.
 
 3.2.  Here There Be Dragons
 
@@ -221,9 +221,9 @@ Internet-Draft             QUIC Applicability               October 2017
 
 
 
-Kuehlewind & Trammell    Expires April 23, 2018                 [Page 4]
+Kuehlewind & Trammell      Expires May 7, 2018                  [Page 4]
 
-Internet-Draft             QUIC Applicability               October 2017
+Internet-Draft             QUIC Applicability              November 2017
 
 
    Stream can be independently open and closed, gracefully or by error.
@@ -234,7 +234,7 @@ Internet-Draft             QUIC Applicability               October 2017
    streams are critical, and does not provide an interface to
    exceptional handling of any stream.  There are special streams in
    QUIC that are used for control on the QUIC connection, however, these
-   streams are not exposed to the apllication.
+   streams are not exposed to the application.
 
    Mapping of application data to streams is application-specific and
    described for HTTP/s in [QUIC-HTTP].  In general data that can be
@@ -242,20 +242,19 @@ Internet-Draft             QUIC Applicability               October 2017
    blocking, if forced to be received in order, should be transmitted
    over different streams.  If there is a logical grouping of those data
    chunks or messages, stream can be reused, or a new stream can be
-   opened for each chunk/message.  However, a QUIC receiver has a
-   maximum number of concurrently open streams.  If the stream limit is
-   exhausted a sender is able to indicate that more streams are needed,
-   however, this does not automatically lead to an increase of the
-   maximum number of streams by the receiver.  Therefore it can be
-   valuable to expose this maximum number to the application, or the
-   number of currently still available, unused streams, and make the
-   mapping of data to streams dependent on this information.
+   opened for each chunk/message.  If a QUIC receiver has maximum
+   allowed concurrent streams open and the sender on the other end
+   indicates that more streams are needed, it doesn't automatically lead
+   to an increase of the maximum number of streams by the receiver.
+   Therefore it can be valuable to expose maximum number of allowed,
+   currently open and currently used streams to the application to make
+   the mapping of data to streams dependent on this information.
 
    Further, streams have a maximum number of bytes that can be sent on
    one stream.  This number is high enough (2^64) that this will usually
    not be reached with current applications.  Applications that send
    chunks of data over a very long period of time (such as days, months,
-   or years), should rather utilize the 0-RTT seesion resumption ability
+   or years), should rather utilize the 0-RTT session resumption ability
    provided by QUIC, than trying to maintain one connection open.
 
 4.1.  Stream versus Flow Multiplexing
@@ -277,12 +276,13 @@ Internet-Draft             QUIC Applicability               October 2017
 
 
 
-Kuehlewind & Trammell    Expires April 23, 2018                 [Page 5]
+
+Kuehlewind & Trammell      Expires May 7, 2018                  [Page 5]
 
-Internet-Draft             QUIC Applicability               October 2017
+Internet-Draft             QUIC Applicability              November 2017
 
 
-4.2.  Paketization and latency
+4.2.  Packetization and latency
 
    Quic provides an interface that provides multiple streams to the
    application, however, the application usually doesn't have control
@@ -291,14 +291,14 @@ Internet-Draft             QUIC Applicability               October 2017
    maximally pack packets to minimize bandwidth consumption and
    computational costs with one or multiple same data frames.  If not
    enough data available to send QUIC may even wait for a short time,
-   trading of latency and bandwidth effeciency.  This time might either
+   trading of latency and bandwidth efficiency.  This time might either
    be pre-configured or can the dynamically adjusted based on the
-   observed sending pattern of the application.  If the apllication
+   observed sending pattern of the application.  If the application
    requires low latency, with only small chunks of data to send, it may
    be valuable to indicate to QUIC that all data should be send out
    immediately.  Or if a certain sending pattern is know by the
-   application, it might also provide valuabe to QUIC how long it should
-   wait to bundle frame into a packet.
+   application, it might also provide valuable guidance to QUIC how long
+   it should wait to bundle frame into a packet.
 
 4.3.  Prioritization
 
@@ -306,8 +306,8 @@ Internet-Draft             QUIC Applicability               October 2017
    receiver.  Prioritization can be realized by the sender and the QUIC
    transport should provide an interface for applications to prioritize
    streams [QUIC].  Further applications can implement their own
-   prioritization scheme on top of QUIC: an an (application) protocol
-   that run on top of QUIC can define explict messages for signaling
+   prioritization scheme on top of QUIC: (an application) protocol that
+   run on top of QUIC can define explicit messages for signaling
    priority, such as those defined for HTTP/2; it can define rules that
    allow an endpoint to determine priority based on context; or it can
    provide a higher level interface and leave the determination to the
@@ -317,7 +317,7 @@ Internet-Draft             QUIC Applicability               October 2017
    in the transport layer.  [QUIC] recommends to retransmit lost data
    before new data, unless indicated differently by the application.
    Currently QUIC only provides fully reliable stream transmission, and
-   as such prioritization of retransmission is likely beneficial in most
+   as such prioritization of retransmissions likely beneficial in most
    cases, as gaps that get filled up and thereby free up flow control.
    For not fully reliable streams priority scheduling of retransmissions
    over data of higher-priority streams might not be desired.  In this
@@ -333,9 +333,9 @@ Internet-Draft             QUIC Applicability               October 2017
 
 
 
-Kuehlewind & Trammell    Expires April 23, 2018                 [Page 6]
+Kuehlewind & Trammell      Expires May 7, 2018                  [Page 6]
 
-Internet-Draft             QUIC Applicability               October 2017
+Internet-Draft             QUIC Applicability              November 2017
 
 
 6.  Information exposure and the Connection ID
@@ -354,8 +354,8 @@ Internet-Draft             QUIC Applicability               October 2017
    associate multiple addresses with a single client during rebinding,
    which has privacy implications, an application may indicate to not
    support exposure of certain information after the handshake.
-   Specificially, an application that has additional information that
-   the client is not behind a NAT and the server is not behind a load
+   Specifically, an application that has additional information that the
+   client is not behind a NAT and the server is not behind a load
    balancer, and therefore it is unlikely that the addresses will be re-
    bound, may indicate to the transport that is wishes to not expose a
    connection ID.
@@ -389,9 +389,9 @@ Internet-Draft             QUIC Applicability               October 2017
 
 
 
-Kuehlewind & Trammell    Expires April 23, 2018                 [Page 7]
+Kuehlewind & Trammell      Expires May 7, 2018                  [Page 7]
 
-Internet-Draft             QUIC Applicability               October 2017
+Internet-Draft             QUIC Applicability              November 2017
 
 
 6.2.  Using Server Retry for Redirection
@@ -412,7 +412,7 @@ Internet-Draft             QUIC Applicability               October 2017
 
 7.  Use of Versions and Cryptographic Handshake
 
-   Versioning in QUIC may change the the protocol's behavior completely,
+   Versioning in QUIC may change the protocol's behavior completely,
    except for the meaning of a few header fields that have been declared
    to be fixed.  As such version of QUIC with a higher version number
    does not necessarily provide a better service, but might simply
@@ -445,9 +445,9 @@ Internet-Draft             QUIC Applicability               October 2017
 
 
 
-Kuehlewind & Trammell    Expires April 23, 2018                 [Page 8]
+Kuehlewind & Trammell      Expires May 7, 2018                  [Page 8]
 
-Internet-Draft             QUIC Applicability               October 2017
+Internet-Draft             QUIC Applicability              November 2017
 
 
 10.  Contributors
@@ -501,9 +501,9 @@ Internet-Draft             QUIC Applicability               October 2017
 
 
 
-Kuehlewind & Trammell    Expires April 23, 2018                 [Page 9]
+Kuehlewind & Trammell      Expires May 7, 2018                  [Page 9]
 
-Internet-Draft             QUIC Applicability               October 2017
+Internet-Draft             QUIC Applicability              November 2017
 
 
    [I-D.nottingham-httpbis-retry]
@@ -557,4 +557,4 @@ Authors' Addresses
 
 
 
-Kuehlewind & Trammell    Expires April 23, 2018                [Page 10]
+Kuehlewind & Trammell      Expires May 7, 2018                 [Page 10]

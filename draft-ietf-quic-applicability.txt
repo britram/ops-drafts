@@ -5,7 +5,7 @@
 Network Working Group                                      M. Kuehlewind
 Internet-Draft                                               B. Trammell
 Intended status: Informational                                ETH Zurich
-Expires: May 7, 2018                                   November 03, 2017
+Expires: April 25, 2019                                 October 22, 2018
 
 
               Applicability of the QUIC Transport Protocol
@@ -34,11 +34,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on May 7, 2018.
+   This Internet-Draft will expire on April 25, 2019.
 
 Copyright Notice
 
-   Copyright (c) 2017 IETF Trust and the persons identified as the
+   Copyright (c) 2018 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Kuehlewind & Trammell      Expires May 7, 2018                  [Page 1]
+Kuehlewind & Trammell    Expires April 25, 2019                 [Page 1]
 
-Internet-Draft             QUIC Applicability              November 2017
+Internet-Draft             QUIC Applicability               October 2018
 
 
 Table of Contents
@@ -63,27 +63,30 @@ Table of Contents
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
      1.1.  Notational Conventions  . . . . . . . . . . . . . . . . .   3
    2.  The Necessity of Fallback . . . . . . . . . . . . . . . . . .   3
-   3.  Zero RTT  . . . . . . . . . . . . . . . . . . . . . . . . . .   3
+   3.  Zero RTT  . . . . . . . . . . . . . . . . . . . . . . . . . .   4
      3.1.  Thinking in Zero RTT  . . . . . . . . . . . . . . . . . .   4
      3.2.  Here There Be Dragons . . . . . . . . . . . . . . . . . .   4
      3.3.  Session resumption versus Keep-alive  . . . . . . . . . .   4
-   4.  Use of Streams  . . . . . . . . . . . . . . . . . . . . . . .   4
-     4.1.  Stream versus Flow Multiplexing . . . . . . . . . . . . .   5
-     4.2.  Packetization and latency . . . . . . . . . . . . . . . .   6
-     4.3.  Prioritization  . . . . . . . . . . . . . . . . . . . . .   6
-   5.  Graceful connection closure . . . . . . . . . . . . . . . . .   6
-   6.  Information exposure and the Connection ID  . . . . . . . . .   7
-     6.1.  Server-Generated Connection ID  . . . . . . . . . . . . .   7
-     6.2.  Using Server Retry for Redirection  . . . . . . . . . . .   8
-   7.  Use of Versions and Cryptographic Handshake . . . . . . . . .   8
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
-   10. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .   9
-   11. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .   9
-   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
-     12.1.  Normative References . . . . . . . . . . . . . . . . . .   9
-     12.2.  Informative References . . . . . . . . . . . . . . . . .   9
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  10
+   4.  Use of Streams  . . . . . . . . . . . . . . . . . . . . . . .   6
+     4.1.  Stream versus Flow Multiplexing . . . . . . . . . . . . .   6
+     4.2.  Packetization and latency . . . . . . . . . . . . . . . .   7
+     4.3.  Prioritization  . . . . . . . . . . . . . . . . . . . . .   7
+   5.  Port Selection  . . . . . . . . . . . . . . . . . . . . . . .   8
+   6.  Graceful connection closure . . . . . . . . . . . . . . . . .   8
+   7.  Information exposure and the Connection ID  . . . . . . . . .   8
+     7.1.  Server-Generated Connection ID  . . . . . . . . . . . . .   9
+     7.2.  Mitigating Timing Linkability with Connection ID
+           Migration . . . . . . . . . . . . . . . . . . . . . . . .   9
+     7.3.  Using Server Retry for Redirection  . . . . . . . . . . .   9
+   8.  Use of Versions and Cryptographic Handshake . . . . . . . . .  10
+   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
+   10. Security Considerations . . . . . . . . . . . . . . . . . . .  10
+   11. Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  10
+   12. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  11
+   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  11
+     13.1.  Normative References . . . . . . . . . . . . . . . . . .  11
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  11
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  13
 
 1.  Introduction
 
@@ -102,17 +105,18 @@ Table of Contents
    specific guidance on how to integrate HTTP/2 with QUIC, see
    [QUIC-HTTP].
 
+
+
+
+
+Kuehlewind & Trammell    Expires April 25, 2019                 [Page 2]
+
+Internet-Draft             QUIC Applicability               October 2018
+
+
    In the following sections we discuss specific caveats to QUIC's
    applicability, and issues that application developers must consider
    when using QUIC as a transport for their application.
-
-
-
-
-Kuehlewind & Trammell      Expires May 7, 2018                  [Page 2]
-
-Internet-Draft             QUIC Applicability              November 2017
-
 
 1.1.  Notational Conventions
 
@@ -151,24 +155,25 @@ Internet-Draft             QUIC Applicability              November 2017
    application's expectation of confidentiality or integrity of its
    payload data.
 
-   Moreover, while encryption (in this case TLS) is inseparable
+   Moreover, while encryption (in this case TLS) is inseparably
    integrated with QUIC, TLS negotiation over TCP can be blocked.  In
    case it is RECOMMENDED to abort the connection, allowing the
    application to present a suitable prompt to the user that secure
    communication is unavailable.
 
+
+
+
+
+Kuehlewind & Trammell    Expires April 25, 2019                 [Page 3]
+
+Internet-Draft             QUIC Applicability               October 2018
+
+
 3.  Zero RTT
 
-   QUIC provides for 0-RTT connection establishment (see section 3.2 of
-   [QUIC]).  This presents opportunities and challenges for applications
-   using QUIC.
-
-
-
-Kuehlewind & Trammell      Expires May 7, 2018                  [Page 3]
-
-Internet-Draft             QUIC Applicability              November 2017
-
+   QUIC provides for 0-RTT connection establishment.  This presents
+   opportunities and challenges for applications using QUIC.
 
 3.1.  Thinking in Zero RTT
 
@@ -195,7 +200,7 @@ Internet-Draft             QUIC Applicability              November 2017
 
    Data in the first flight sent by the client in a connection
    established with 0-RTT MUST be idempotent (as specified in section
-   3.2 in [QUIC-TLS]).  Applications MUST be designed, and their data
+   2.1 in [QUIC-TLS]).  Applications MUST be designed, and their data
    MUST be framed, such that multiple reception of idempotent data is
    recognized as such by the receiverApplications that cannot treat data
    that may appear in a 0-RTT connection establishment as idempotent
@@ -207,7 +212,75 @@ Internet-Draft             QUIC Applicability              November 2017
 
 3.3.  Session resumption versus Keep-alive
 
-   [EDITOR'S NOTE: see https://github.com/quicwg/ops-drafts/issues/6]
+   Because QUIC is encapsulated in UDP, applications using QUIC must
+   deal with short idle timeouts.  Deployed stateful middleboxes will
+   generally establish state for UDP flows on the first packet state,
+   and keep state for much shorter idle periods than for TCP.  According
+   to a 2010 study ([Hatonen10]), UDP applications can assume that any
+
+
+
+
+Kuehlewind & Trammell    Expires April 25, 2019                 [Page 4]
+
+Internet-Draft             QUIC Applicability               October 2018
+
+
+   NAT binding or other state entry will be expired after just thirty
+   seconds of inactivity.
+
+   A QUIC application has three strategies to deal with this issue:
+
+   o  Ignore it, if the application-layer protocol consists only of
+      interactions with no or very short idle periods.
+
+   o  Ensure there are no long idle periods.
+
+   o  Resume the session after a long idle period, using 0-RTT
+      resumption when appropriate.
+
+   The first strategy is the easiest, but it only applies to certain
+   applications.
+
+   Either the server or the client in a QUIC application can send PING
+   frames as keep-alives, to prevent the connection and any on-path
+   state from timing out.  Recommendations for the use of keep-alives
+   are application specific, mainly depending on the latency
+   requirements and message frequency of the application.  In this case,
+   the application mapping must specify whether the client or server is
+   responsible for keeping the application alive.  Note that sending
+   PING frames more frequently than every 30 seconds over long idle
+   periods may result in a too much unproductive traffic and power usage
+   for some situations.
+
+   Alternatively, the client (but not the server) can use session
+   resumption instead of sending keepalive traffic.  In this case, a
+   client that wants to send data to a server over a connection idle
+   longer than the server's idle timeout (available from the
+   idle_timeout transport parameter) can simply reconnect.  When
+   possible, this reconnection can use 0-RTT session resumption,
+   reducing the latency involved with restarting the connection.  This
+   of course only applies in cases in which 0-RTT data is safe, when the
+   client is the restarting peer, and when the data to be sent is
+   idempotent.
+
+   The tradeoffs between resumption and keepalive need to be evaluated
+   on a per-application basis.  However, in general applications should
+   use keepalives only in circumstances where continued communication is
+   highly likely; [QUIC-HTTP], for instance, recommends using PING
+   frames for keepalive only when a request is outstanding.
+
+
+
+
+
+
+
+
+Kuehlewind & Trammell    Expires April 25, 2019                 [Page 5]
+
+Internet-Draft             QUIC Applicability               October 2018
+
 
 4.  Use of Streams
 
@@ -215,21 +288,12 @@ Internet-Draft             QUIC Applicability              November 2017
    multiple streams over a single connection, without head-of-line
    blocking between streams, associated at a point in time with a single
    five-tuple.  Stream data is carried within Frames, where one (UDP)
-   packet on the wired can carry one of multiple stream frames.
-
-
-
-
-
-Kuehlewind & Trammell      Expires May 7, 2018                  [Page 4]
-
-Internet-Draft             QUIC Applicability              November 2017
-
+   packet on the wire can carry one of multiple stream frames.
 
    Stream can be independently open and closed, gracefully or by error.
    If a critical stream for the application is closed, the application
    can generate respective error messages on the application layer to
-   inform the other end or the higher layer and eventually indicate quic
+   inform the other end or the higher layer and eventually indicate QUIC
    to reset the connection.  QUIC, however, does not need to know which
    streams are critical, and does not provide an interface to
    exceptional handling of any stream.  There are special streams in
@@ -266,48 +330,47 @@ Internet-Draft             QUIC Applicability              November 2017
    not intended to be used for differentiating streams in terms of
    network treatment.  Application traffic requiring different network
    treatment SHOULD therefore be carried over different five-tuples
+
+
+
+Kuehlewind & Trammell    Expires April 25, 2019                 [Page 6]
+
+Internet-Draft             QUIC Applicability               October 2018
+
+
    (i.e.  multiple QUIC connections).  Given QUIC's ability to send
    application data in the first RTT of a connection (if a previous
    connection to the same host has been successfully established to
-   provide the respective credentials), the cost for establishing
-   another connection are extremely low.
-
-
-
-
-
-
-Kuehlewind & Trammell      Expires May 7, 2018                  [Page 5]
-
-Internet-Draft             QUIC Applicability              November 2017
-
+   provide the respective credentials), the cost of establishing another
+   connection is extremely low.
 
 4.2.  Packetization and latency
 
-   Quic provides an interface that provides multiple streams to the
-   application, however, the application usually doesn't have control
-   how the data transmitted over one stream is mapped into frame and how
-   frames are bundled into packets.  By default QUIC will try to
-   maximally pack packets to minimize bandwidth consumption and
-   computational costs with one or multiple same data frames.  If not
-   enough data available to send QUIC may even wait for a short time,
-   trading of latency and bandwidth efficiency.  This time might either
-   be pre-configured or can the dynamically adjusted based on the
-   observed sending pattern of the application.  If the application
-   requires low latency, with only small chunks of data to send, it may
-   be valuable to indicate to QUIC that all data should be send out
-   immediately.  Or if a certain sending pattern is know by the
-   application, it might also provide valuable guidance to QUIC how long
-   it should wait to bundle frame into a packet.
+   QUIC provides an interface that provides multiple streams to the
+   application; however, the application usually cannot control how data
+   transmitted over one stream is mapped into frames or how those frames
+   are bundled into packets.  By default, QUIC will try to maximally
+   pack packets with one or more stream data frames to minimize
+   bandwidth consumption and computational costs (see section 8 of
+   [QUIC]).  If there is not enough data available to fill a packet,
+   QUIC may even wait for a short time, to optimize bandwidth efficiency
+   instead of latency.  This delay can either be pre-configured or
+   dynamically adjusted based on the observed sending pattern of the
+   application.  If the application requires low latency, with only
+   small chunks of data to send, it may be valuable to indicate to QUIC
+   that all data should be send out immediately.  Alternatively, if the
+   application expects to use a specific sending pattern, it can also
+   provide a suggested delay to QUIC for how long to wait before bundle
+   frames into a packet.
 
 4.3.  Prioritization
 
-   Stream prioritization is not exposed to the network, nor to the
-   receiver.  Prioritization can be realized by the sender and the QUIC
+   Stream prioritization is not exposed to either the network or the
+   receiver.  Prioritization is managed by the sender, and the QUIC
    transport should provide an interface for applications to prioritize
    streams [QUIC].  Further applications can implement their own
-   prioritization scheme on top of QUIC: (an application) protocol that
-   run on top of QUIC can define explicit messages for signaling
+   prioritization scheme on top of QUIC: an application protocol that
+   runs on top of QUIC can define explicit messages for signaling
    priority, such as those defined for HTTP/2; it can define rules that
    allow an endpoint to determine priority based on context; or it can
    provide a higher level interface and leave the determination to the
@@ -316,29 +379,55 @@ Internet-Draft             QUIC Applicability              November 2017
    Priority handling of retransmissions can be implemented by the sender
    in the transport layer.  [QUIC] recommends to retransmit lost data
    before new data, unless indicated differently by the application.
-   Currently QUIC only provides fully reliable stream transmission, and
-   as such prioritization of retransmissions likely beneficial in most
-   cases, as gaps that get filled up and thereby free up flow control.
-   For not fully reliable streams priority scheduling of retransmissions
-   over data of higher-priority streams might not be desired.  In this
-   case QUIC could also provide an interface or derive the
+   Currently, QUIC only provides fully reliable stream transmission,
+   which means that prioritization of retransmissions will be beneficial
+   in most cases, by filling in gaps and freeing up the flow control
+   window.  For partially reliable or unreliable streams, priority
+   scheduling of retransmissions over data of higher-priority streams
+   might not be desirable.  For such streams, QUIC could either provide
+
+
+
+
+Kuehlewind & Trammell    Expires April 25, 2019                 [Page 7]
+
+Internet-Draft             QUIC Applicability               October 2018
+
+
+   an explicit interface to control prioritization, or derive the
    prioritization decision from the reliability level of the stream.
 
-5.  Graceful connection closure
+5.  Port Selection
+
+   As QUIC is a general purpose transport protocol, there are no
+   requirements that servers use a particular UDP port for QUIC in
+   general.  Instead, the same port number is used as would be used for
+   the same application over TCP.  In the case of HTTP the expectation
+   is that port 443 is used, which has already been registered for "http
+   protocol over TLS/SSL".  However, [QUIC-HTTP] also specifies the use
+   of Alt-Svc for HTTP/QUIC discovery which allows the server to use and
+   announce a different port number.
+
+   In general, port numbers serves two purposes: "first, they provide a
+   demultiplexing identifier to differentiate transport sessions between
+   the same pair of endpoints, and second, they may also identify the
+   application protocol and associated service to which processes
+   connect" [RFC6335].  Note that the assumption that an application can
+   be identified in the network based on the port number is less true
+   today, due to encapsulation, mechanisms for dynamic port assignments
+   as well as NATs.
+
+   However, whenever a non-standard port is used which does not enable
+   easy mapping to a registered service name, this can lead to blocking
+   by network elements such as firewalls that rely on the port number as
+   a first order of filtering.
+
+6.  Graceful connection closure
 
    [EDITOR'S NOTE: give some guidance here about the steps an
    application should take; however this is still work in progress]
 
-
-
-
-
-Kuehlewind & Trammell      Expires May 7, 2018                  [Page 6]
-
-Internet-Draft             QUIC Applicability              November 2017
-
-
-6.  Information exposure and the Connection ID
+7.  Information exposure and the Connection ID
 
    QUIC exposes some information to the network in the unencrypted part
    of the header, either before the encryption context is established,
@@ -346,78 +435,94 @@ Internet-Draft             QUIC Applicability              November 2017
    has a long header that is used during connection establishment and
    for other control processes, and a short header that may be used for
    data transmission in an established connection.  While the long
-   header is fixed and exposes some information, the short header only
-   exposes the packet number by default and may optionally expose a
-   connection ID.
+   header always exposes some information (such as the version and
+   Connection IDs), the short header exposes at most only a single
+   Connection ID.
 
-   Given that exposing this information may make it possible to
-   associate multiple addresses with a single client during rebinding,
-   which has privacy implications, an application may indicate to not
-   support exposure of certain information after the handshake.
-   Specifically, an application that has additional information that the
-   client is not behind a NAT and the server is not behind a load
-   balancer, and therefore it is unlikely that the addresses will be re-
-   bound, may indicate to the transport that is wishes to not expose a
-   connection ID.
 
-6.1.  Server-Generated Connection ID
+
+
+
+
+
+Kuehlewind & Trammell    Expires April 25, 2019                 [Page 8]
+
+Internet-Draft             QUIC Applicability               October 2018
+
+
+7.1.  Server-Generated Connection ID
 
    QUIC supports a server-generated Connection ID, transmitted to the
-   client during connection establishment: see Section 5.7 of [QUIC]
-   Servers behind load balancers should propose a Connection ID during
-   the handshake, encoding the identity of the server or information
-   about its load balancing pool, in order to support stateless load
-   balancing.  Once the server generates a Connection ID that encodes
-   its identity, every CDN load balancer would be able to forward the
-   packets to that server without needing information about every
-   specific flow it is forwarding.
+   client during connection establishment (see Section 6.1 of [QUIC]).
+   Servers behind load balancers may need to propose a Connection ID
+   during the handshake, encoding the identity of the server or
+   information about its load balancing pool, in order to support
+   stateless load balancing.  Once the server generates a Connection ID
+   that encodes its identity, every CDN load balancer would be able to
+   forward the packets to that server without retaining connection
+   state.
 
-   Server-generated Connection IDs must not encode any information other
-   that that needed to route packets to the appropriate backend
-   server(s): typically the identity of the backend server or pool of
-   servers, if the data-center's load balancing system keeps "local"
-   state of all flows itself.  Care must be exercised to ensure that the
-   information encoded in the Connection ID is not sufficient to
-   identify unique end users.  Note that by encoding routing information
-   in the Connection ID, load balancers open up a new attack vector that
-   allows bad actors to direct traffic at a specific backend server or
-   pool.  It is therefore recommended that Server-Generated Connection
-   ID includes a cryptographic MAC that the load balancer pool server
-   are able to identify and discard packets featuring an invalid MAC.
+   Server-generated connection IDs should seek to obscure any encoding,
+   of routing identities or any other information.  Exposing the server
+   mapping would allow linkage of multiple IP addresses to the same host
+   if the server also supports migration.  Furthermore, this opens an
+   attack vector on specific servers or pools.
 
+   The best way to obscure an encoding is to appear random to observers,
+   which is most rigorously achieved with encryption.
 
+7.2.  Mitigating Timing Linkability with Connection ID Migration
 
+   While sufficiently robust connection ID generation schemes will
+   mitigate linkability issues, they do not provide full protection.
+   Analysis of the lifetimes of six-tuples (source and destination
+   addresses as well as the migrated CID) may expose these links anyway.
 
+   In the limit where connection migration in a server pool is rare, it
+   is trivial for an observer to associate two connection IDs.
+   Conversely, in the opposite limit where every server handles multiple
+   simultaneous migrations, even an exposed server mapping may be
+   insufficient information.
 
-Kuehlewind & Trammell      Expires May 7, 2018                  [Page 7]
-
-Internet-Draft             QUIC Applicability              November 2017
+   The most efficient mitigation for these attacks is operational,
+   either by using a load balancing architecture that loads more flows
+   onto a single server-side address, by coordinating the timing of
+   migrations to attempt to increase the number of simultaneous
+   migrations at a given time, or through other means.
 
+7.3.  Using Server Retry for Redirection
 
-6.2.  Using Server Retry for Redirection
-
-   QUIC provide a Server Retry packet that can be send by a server in
+   QUIC provides a Server Retry packet that can be sent by a server in
    response to the Client Initial packet.  The server may choose a new
-   connection ID in that packet and the client will retry by sending
-   another Client Initial packet with the server-selected connection ID.
+   Connection ID in that packet and the client will retry by sending
+   another Client Initial packet with the server-selected Connection ID.
    This mechanism can be used to redirect a connection to a different
    server, e.g. due to performance reasons or when servers in a server
+
+
+
+Kuehlewind & Trammell    Expires April 25, 2019                 [Page 9]
+
+Internet-Draft             QUIC Applicability               October 2018
+
+
    pool are upgraded gradually, and therefore may support different
    versions of QUIC.  In this case, it is assumed that all servers
    belonging to a certain pool are served in cooperation with load
-   balancers that forward the traffic based on the connection ID.  A
-   server can chose the connection ID in the Server Retry packet such
+   balancers that forward the traffic based on the Connection ID.  A
+   server can choose the Connection ID in the Server Retry packet such
    that the load balancer will redirect the next Client Initial packet
    to a different server in that pool.
 
-7.  Use of Versions and Cryptographic Handshake
+8.  Use of Versions and Cryptographic Handshake
 
    Versioning in QUIC may change the protocol's behavior completely,
    except for the meaning of a few header fields that have been declared
-   to be fixed.  As such version of QUIC with a higher version number
-   does not necessarily provide a better service, but might simply
-   provide a very different service, so an application needs to be able
-   to select which versions of QUIC it wants to use.
+   to be invariant [QUIC-INVARIANTS].  A version of QUIC with a higher
+   version number will not necessarily provide a better service, but
+   might simply provide a different feature set.  As such, an
+   application needs to be able to select which versions of QUIC it
+   wants to use.
 
    A new version could use an encryption scheme other than TLS 1.3 or
    higher.  [QUIC] specifies requirements for the cryptographic
@@ -425,11 +530,11 @@ Internet-Draft             QUIC Applicability              November 2017
    separate specification [QUIC-TLS].  This split is performed to enable
    light-weight versioning with different cryptographic handshakes.
 
-8.  IANA Considerations
+9.  IANA Considerations
 
    This document has no actions for IANA.
 
-9.  Security Considerations
+10.  Security Considerations
 
    See the security considerations in [QUIC] and [QUIC-TLS]; the
    security considerations for the underlying transport protocol are
@@ -441,21 +546,23 @@ Internet-Draft             QUIC Applicability              November 2017
    connection SHOULD fail to allow the application to explicitly handle
    fallback to a less-secure alternative.  See Section 2.
 
+11.  Contributors
+
+   Igor Lubashev contributed text to Section 7 on server-selected
+   Connection IDs.
 
 
 
 
-Kuehlewind & Trammell      Expires May 7, 2018                  [Page 8]
+
+
+
+Kuehlewind & Trammell    Expires April 25, 2019                [Page 10]
 
-Internet-Draft             QUIC Applicability              November 2017
+Internet-Draft             QUIC Applicability               October 2018
 
 
-10.  Contributors
-
-   Igor Lubashev contributed text to Section 6 on server-selected
-   connection IDs.
-
-11.  Acknowledgments
+12.  Acknowledgments
 
    This work is partially supported by the European Commission under
    Horizon 2020 grant agreement no. 688421 Measurement and Architecture
@@ -463,29 +570,53 @@ Internet-Draft             QUIC Applicability              November 2017
    for Education, Research, and Innovation under contract no. 15.0268.
    This support does not imply endorsement.
 
-12.  References
+13.  References
 
-12.1.  Normative References
+13.1.  Normative References
 
    [QUIC]     Iyengar, J. and M. Thomson, "QUIC: A UDP-Based Multiplexed
-              and Secure Transport", draft-ietf-quic-transport-07 (work
-              in progress), October 2017.
+              and Secure Transport", draft-ietf-quic-transport-15 (work
+              in progress), October 2018.
+
+   [QUIC-INVARIANTS]
+              Thomson, M., "Version-Independent Properties of QUIC",
+              draft-ietf-quic-invariants-03 (work in progress), October
+              2018.
 
    [QUIC-TLS]
               Thomson, M. and S. Turner, "Using Transport Layer Security
-              (TLS) to Secure QUIC", draft-ietf-quic-tls-07 (work in
-              progress), October 2017.
+              (TLS) to Secure QUIC", draft-ietf-quic-tls-15 (work in
+              progress), October 2018.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
 
-   [TLS13]    Thomson, M. and S. Turner, "Using Transport Layer Security
-              (TLS) to Secure QUIC", draft-ietf-quic-tls-07 (work in
-              progress), October 2017.
+   [RFC6335]  Cotton, M., Eggert, L., Touch, J., Westerlund, M., and S.
+              Cheshire, "Internet Assigned Numbers Authority (IANA)
+              Procedures for the Management of the Service Name and
+              Transport Protocol Port Number Registry", BCP 165,
+              RFC 6335, DOI 10.17487/RFC6335, August 2011,
+              <https://www.rfc-editor.org/info/rfc6335>.
 
-12.2.  Informative References
+   [TLS13]    Thomson, M. and S. Turner, "Using Transport Layer Security
+              (TLS) to Secure QUIC", draft-ietf-quic-tls-15 (work in
+              progress), October 2018.
+
+13.2.  Informative References
+
+
+
+
+
+
+
+
+Kuehlewind & Trammell    Expires April 25, 2019                [Page 11]
+
+Internet-Draft             QUIC Applicability               October 2018
+
 
    [Edeline16]
               Edeline, K., Kuehlewind, M., Trammell, B., Aben, E., and
@@ -493,18 +624,16 @@ Internet-Draft             QUIC Applicability              November 2017
               (arXiv preprint 1612.07816)", December 2016,
               <https://arxiv.org/abs/1612.07816>.
 
+   [Hatonen10]
+              Hatonen, S., Nyrhinen, A., Eggert, L., Strowes, S.,
+              Sarolahti, P., and M. Kojo, "An experimental study of home
+              gateway characteristics (Proc. ACM IMC 2010)", October
+              2010.
+
    [HTTP-RETRY]
               Nottingham, M., "Retrying HTTP Requests", draft-
               nottingham-httpbis-retry-01 (work in progress), February
               2017.
-
-
-
-
-Kuehlewind & Trammell      Expires May 7, 2018                  [Page 9]
-
-Internet-Draft             QUIC Applicability              November 2017
-
 
    [I-D.nottingham-httpbis-retry]
               Nottingham, M., "Retrying HTTP Requests", draft-
@@ -519,8 +648,8 @@ Internet-Draft             QUIC Applicability              November 2017
 
    [QUIC-HTTP]
               Bishop, M., "Hypertext Transfer Protocol (HTTP) over
-              QUIC", draft-ietf-quic-http-07 (work in progress), October
-              2017.
+              QUIC", draft-ietf-quic-http-15 (work in progress), October
+              2018.
 
    [Swett16]  Swett, I., "QUIC Deployment Experience at Google (IETF96
               QUIC BoF presentation)", July 2016,
@@ -532,6 +661,18 @@ Internet-Draft             QUIC Applicability              November 2017
               Transparency Measurements using RIPE Atlas (RIPE72 MAT
               presentation)", May 2016, <https://ripe72.ripe.net/wp-
               content/uploads/presentations/86-atlas-udpdiff.pdf>.
+
+
+
+
+
+
+
+
+Kuehlewind & Trammell    Expires April 25, 2019                [Page 12]
+
+Internet-Draft             QUIC Applicability               October 2018
+
 
 Authors' Addresses
 
@@ -557,4 +698,31 @@ Authors' Addresses
 
 
 
-Kuehlewind & Trammell      Expires May 7, 2018                 [Page 10]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Kuehlewind & Trammell    Expires April 25, 2019                [Page 13]

@@ -83,8 +83,8 @@ table.header td, table#rfc\.headerblock td {
   line-height: 28px;
 }
 
-samp, tt, code, pre {
-  font: 15px Consolas, monospace;
+samp, tt, code, pre, span.tt {
+  font: 13.5px Consolas, monospace;
   font-size-adjust: none;
 }
 pre {
@@ -300,30 +300,33 @@ ul.toc li {
 <link href="#rfc.section.3.3" rel="Chapter" title="3.3 Application Identification">
 <link href="#rfc.section.3.4" rel="Chapter" title="3.4 Flow association">
 <link href="#rfc.section.3.5" rel="Chapter" title="3.5 Flow teardown">
-<link href="#rfc.section.3.6" rel="Chapter" title="3.6 Round-trip time measurement">
-<link href="#rfc.section.3.7" rel="Chapter" title="3.7 Flow symmetry measurement">
-<link href="#rfc.section.4" rel="Chapter" title="4 Specific Network Management Tasks">
-<link href="#rfc.section.4.1" rel="Chapter" title="4.1 Stateful treatment of QUIC traffic">
-<link href="#rfc.section.4.2" rel="Chapter" title="4.2 Passive network performance measurement and troubleshooting">
-<link href="#rfc.section.4.3" rel="Chapter" title="4.3 Server cooperation with load balancers">
-<link href="#rfc.section.4.4" rel="Chapter" title="4.4 DDoS Detection and Mitigation">
-<link href="#rfc.section.4.5" rel="Chapter" title="4.5 QoS support and ECMP">
-<link href="#rfc.section.5" rel="Chapter" title="5 IANA Considerations">
-<link href="#rfc.section.6" rel="Chapter" title="6 Security Considerations">
-<link href="#rfc.section.7" rel="Chapter" title="7 Contributors">
-<link href="#rfc.section.8" rel="Chapter" title="8 Acknowledgments">
-<link href="#rfc.references" rel="Chapter" title="9 References">
-<link href="#rfc.references.1" rel="Chapter" title="9.1 Normative References">
-<link href="#rfc.references.2" rel="Chapter" title="9.2 Informative References">
+<link href="#rfc.section.3.6" rel="Chapter" title="3.6 Round-Trip Time (RTT) Measurement">
+<link href="#rfc.section.3.6.1" rel="Chapter" title="3.6.1 Measuring initial RTT">
+<link href="#rfc.section.4" rel="Chapter" title="4 Using the Spin Bit for Passive RTT Measurement">
+<link href="#rfc.section.4.1" rel="Chapter" title="4.1 Flow symmetry measurement">
+<link href="#rfc.section.5" rel="Chapter" title="5 Specific Network Management Tasks">
+<link href="#rfc.section.5.1" rel="Chapter" title="5.1 Stateful treatment of QUIC traffic">
+<link href="#rfc.section.5.2" rel="Chapter" title="5.2 Passive network performance measurement and troubleshooting">
+<link href="#rfc.section.5.3" rel="Chapter" title="5.3 Server cooperation with load balancers">
+<link href="#rfc.section.5.4" rel="Chapter" title="5.4 DDoS Detection and Mitigation">
+<link href="#rfc.section.5.5" rel="Chapter" title="5.5 Distinguishing acknowledgment traffic">
+<link href="#rfc.section.5.6" rel="Chapter" title="5.6 QoS support and ECMP">
+<link href="#rfc.section.6" rel="Chapter" title="6 IANA Considerations">
+<link href="#rfc.section.7" rel="Chapter" title="7 Security Considerations">
+<link href="#rfc.section.8" rel="Chapter" title="8 Contributors">
+<link href="#rfc.section.9" rel="Chapter" title="9 Acknowledgments">
+<link href="#rfc.references" rel="Chapter" title="10 References">
+<link href="#rfc.references.1" rel="Chapter" title="10.1 Normative References">
+<link href="#rfc.references.2" rel="Chapter" title="10.2 Informative References">
 <link href="#rfc.authors" rel="Chapter">
 
 
-  <meta name="generator" content="xml2rfc version 2.10.3 - https://tools.ietf.org/tools/xml2rfc" />
+  <meta name="generator" content="xml2rfc version 2.22.1 - https://tools.ietf.org/tools/xml2rfc" />
   <link rel="schema.dct" href="http://purl.org/dc/terms/" />
 
   <meta name="dct.creator" content="Kuehlewind, M. and B. Trammell" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-quic-manageability-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2018-10-22" />
+  <meta name="dct.issued" scheme="ISO8601" content="2019-04-23" />
   <meta name="dct.abstract" content="This document discusses manageability of the QUIC transport protocol, focusing on caveats impacting network operations involving QUIC traffic. Its intended audience is network operators, as well as content providers that rely on the use of QUIC-aware middleboxes, e.g. for load balancing." />
   <meta name="description" content="This document discusses manageability of the QUIC transport protocol, focusing on caveats impacting network operations involving QUIC traffic. Its intended audience is network operators, as well as content providers that rely on the use of QUIC-aware middleboxes, e.g. for load balancing." />
 
@@ -347,8 +350,8 @@ ul.toc li {
 <td class="right">ETH Zurich</td>
 </tr>
 <tr>
-<td class="left">Expires: April 25, 2019</td>
-<td class="right">October 22, 2018</td>
+<td class="left">Expires: October 25, 2019</td>
+<td class="right">April 23, 2019</td>
 </tr>
 
     	
@@ -364,9 +367,9 @@ ul.toc li {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on April 25, 2019.</p>
+<p>This Internet-Draft will expire on October 25, 2019.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
-<p>Copyright (c) 2018 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
+<p>Copyright (c) 2019 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
 
   
@@ -412,35 +415,41 @@ ul.toc li {
 </li>
 <li>3.5.   <a href="#rfc.section.3.5">Flow teardown</a>
 </li>
-<li>3.6.   <a href="#rfc.section.3.6">Round-trip time measurement</a>
+<li>3.6.   <a href="#rfc.section.3.6">Round-Trip Time (RTT) Measurement</a>
 </li>
-<li>3.7.   <a href="#rfc.section.3.7">Flow symmetry measurement</a>
+<ul><li>3.6.1.   <a href="#rfc.section.3.6.1">Measuring initial RTT</a>
 </li>
-</ul><li>4.   <a href="#rfc.section.4">Specific Network Management Tasks</a>
+</ul></ul><li>4.   <a href="#rfc.section.4">Using the Spin Bit for Passive RTT Measurement</a>
 </li>
-<ul><li>4.1.   <a href="#rfc.section.4.1">Stateful treatment of QUIC traffic</a>
+<ul><li>4.1.   <a href="#rfc.section.4.1">Flow symmetry measurement</a>
 </li>
-<li>4.2.   <a href="#rfc.section.4.2">Passive network performance measurement and troubleshooting</a>
+</ul><li>5.   <a href="#rfc.section.5">Specific Network Management Tasks</a>
 </li>
-<li>4.3.   <a href="#rfc.section.4.3">Server cooperation with load balancers</a>
+<ul><li>5.1.   <a href="#rfc.section.5.1">Stateful treatment of QUIC traffic</a>
 </li>
-<li>4.4.   <a href="#rfc.section.4.4">DDoS Detection and Mitigation</a>
+<li>5.2.   <a href="#rfc.section.5.2">Passive network performance measurement and troubleshooting</a>
 </li>
-<li>4.5.   <a href="#rfc.section.4.5">QoS support and ECMP</a>
+<li>5.3.   <a href="#rfc.section.5.3">Server cooperation with load balancers</a>
 </li>
-</ul><li>5.   <a href="#rfc.section.5">IANA Considerations</a>
+<li>5.4.   <a href="#rfc.section.5.4">DDoS Detection and Mitigation</a>
 </li>
-<li>6.   <a href="#rfc.section.6">Security Considerations</a>
+<li>5.5.   <a href="#rfc.section.5.5">Distinguishing acknowledgment traffic</a>
 </li>
-<li>7.   <a href="#rfc.section.7">Contributors</a>
+<li>5.6.   <a href="#rfc.section.5.6">QoS support and ECMP</a>
 </li>
-<li>8.   <a href="#rfc.section.8">Acknowledgments</a>
+</ul><li>6.   <a href="#rfc.section.6">IANA Considerations</a>
 </li>
-<li>9.   <a href="#rfc.references">References</a>
+<li>7.   <a href="#rfc.section.7">Security Considerations</a>
 </li>
-<ul><li>9.1.   <a href="#rfc.references.1">Normative References</a>
+<li>8.   <a href="#rfc.section.8">Contributors</a>
 </li>
-<li>9.2.   <a href="#rfc.references.2">Informative References</a>
+<li>9.   <a href="#rfc.section.9">Acknowledgments</a>
+</li>
+<li>10.   <a href="#rfc.references">References</a>
+</li>
+<ul><li>10.1.   <a href="#rfc.references.1">Normative References</a>
+</li>
+<li>10.2.   <a href="#rfc.references.2">Informative References</a>
 </li>
 </ul><li><a href="#rfc.authors">Authors' Addresses</a>
 </li>
@@ -451,14 +460,15 @@ ul.toc li {
   <h1 id="rfc.section.1">
 <a href="#rfc.section.1">1.</a> <a href="#introduction" id="introduction">Introduction</a>
 </h1>
-<p id="rfc.section.1.p.1">QUIC <a href="#QUIC-TRANSPORT" class="xref">[QUIC-TRANSPORT]</a> is a new transport protocol currently under development in the IETF quic working group, focusing on support of semantics as needed for HTTP/2 <a href="#QUIC-HTTP" class="xref">[QUIC-HTTP]</a>.  Based on current deployment practices, QUIC is encapsulated in UDP and encrypted by default. The current version of QUIC integrates TLS <a href="#QUIC-TLS" class="xref">[QUIC-TLS]</a> to encrypt all payload data and most control information. Given QUIC is an end-to-end transport protocol, all information in the protocol header, even that which can be inspected, is is not meant to be mutable by the network, and is therefore integrity-protected to the extent possible.</p>
-<p id="rfc.section.1.p.2">This document provides guidance for network operation on the management of QUIC traffic. This includes guidance on how to interpret and utilize information that is exposed by QUIC to the network as well as explaining requirement and assumptions that the QUIC protocol design takes toward the expected network treatment. It also discusses how common network management practices will be impacted by QUIC.</p>
-<p id="rfc.section.1.p.3">Of course, network management is not a one-size-fits-all endeavour: practices considered necessary or even mandatory within enterprise networks with certain compliance requirements, for example, would be impermissible on other networks without those requirements. This document therefore does not make any specific recommendations as to which practices should or should not be applied; for each practice, it describes what is and is not possible with the QUIC transport protocol as defined.</p>
-<p id="rfc.section.1.p.4">QUIC is at the moment very much a moving target. This document refers the state of the QUIC working group drafts as well as to changes under discussion, via issues and pull requests in GitHub current as of the time of writing.</p>
+<p id="rfc.section.1.p.1">QUIC <a href="#QUIC-TRANSPORT" class="xref">[QUIC-TRANSPORT]</a> is a new transport protocol currently under development in the IETF quic working group, focusing on support of semantics as needed for HTTP/2 <a href="#QUIC-HTTP" class="xref">[QUIC-HTTP]</a>.  Based on current deployment practices, QUIC is encapsulated in UDP and encrypted by default. The current version of QUIC integrates TLS <a href="#QUIC-TLS" class="xref">[QUIC-TLS]</a> to encrypt all payload data and most control information.</p>
+<p id="rfc.section.1.p.2">Given that QUIC is an end-to-end transport protocol, all information in the protocol header, even that which can be inspected, is not meant to be mutable by the network, and is therefore integrity-protected. While less information is visible to the network than for TCP, integrity protection can also simplify troubleshooting because none of the nodes on the network path can modify the transport layer information.</p>
+<p id="rfc.section.1.p.3">This document provides guidance for network operation on the management of QUIC traffic. This includes guidance on how to interpret and utilize information that is exposed by QUIC to the network as well as explaining requirement and assumptions that the QUIC protocol design takes toward the expected network treatment. It also discusses how common network management practices will be impacted by QUIC.</p>
+<p id="rfc.section.1.p.4">Of course, network management is not a one-size-fits-all endeavour: practices considered necessary or even mandatory within enterprise networks with certain compliance requirements, for example, would be impermissible on other networks without those requirements. This document therefore does not make any specific recommendations as to which practices should or should not be applied; for each practice, it describes what is and is not possible with the QUIC transport protocol as defined.</p>
+<p id="rfc.section.1.p.5">QUIC is at the moment very much a moving target. This document refers the state of the QUIC working group drafts as well as to changes under discussion, via issues and pull requests in GitHub current as of the time of writing.</p>
 <h1 id="rfc.section.1.1">
 <a href="#rfc.section.1.1">1.1.</a> <a href="#notational-conventions" id="notational-conventions">Notational Conventions</a>
 </h1>
-<p id="rfc.section.1.1.p.1">The words &#8220;MUST&#8221;, &#8220;MUST NOT&#8221;, &#8220;SHOULD&#8221;, and &#8220;MAY&#8221; are used in this document.  It&#8217;s not shouting; when these words are capitalized, they have a special meaning as defined in <a href="#RFC2119" class="xref">[RFC2119]</a>.</p>
+<p id="rfc.section.1.1.p.1">The key words &#8220;MUST&#8221;, &#8220;MUST NOT&#8221;, &#8220;REQUIRED&#8221;, &#8220;SHALL&#8221;, &#8220;SHALL NOT&#8221;, &#8220;SHOULD&#8221;, &#8220;SHOULD NOT&#8221;, &#8220;RECOMMENDED&#8221;, &#8220;NOT RECOMMENDED&#8221;, &#8220;MAY&#8221;, and &#8220;OPTIONAL&#8221; in this document are to be interpreted as described in BCP 14 <a href="#RFC2119" class="xref">[RFC2119]</a> <a href="#RFC8174" class="xref">[RFC8174]</a> when, and only when, they appear in all capitals, as shown here.</p>
 <h1 id="rfc.section.2">
 <a href="#rfc.section.2">2.</a> <a href="#sec-wire-image" id="sec-wire-image">Features of the QUIC Wire Image</a>
 </h1>
@@ -468,18 +478,26 @@ ul.toc li {
 <a href="#rfc.section.2.1">2.1.</a> <a href="#public-header" id="public-header">QUIC Packet Header Structure</a>
 </h1>
 <p id="rfc.section.2.1.p.1">QUIC packets may have either a long header, or a short header. The first bit of the QUIC header indicates which type of header is present.</p>
-<p id="rfc.section.2.1.p.2">The long header exposes more information. It is used during connection establishment, including version negotiation, server retry, and 0-RTT data. It contains a version number, as well as source and destination connection IDs for grouping packets belonging to the same flow. The definition and location of these fields in the QUIC long header are invariant for future versions of QUIC, although future versions of QUIC may provide additional fields in the long header <a href="#QUIC-INVARIANTS" class="xref">[QUIC-INVARIANTS]</a>.</p>
-<p id="rfc.section.2.1.p.3">Short headers are used after connection establishment. The only information they contain for inspection on the path is an optional, variable-length destination connection ID.</p>
-<p id="rfc.section.2.1.p.4">As of draft version 13 of the QUIC transport document, the following information may be exposed in QUIC packet headers:</p>
+<p id="rfc.section.2.1.p.2">The long header exposes more information. It is used during connection establishment, including version negotiation, retry, and 0-RTT data. It contains a version number, as well as source and destination connection IDs for grouping packets belonging to the same flow. The definition and location of these fields in the QUIC long header are invariant for future versions of QUIC, although future versions of QUIC may provide additional fields in the long header <a href="#QUIC-INVARIANTS" class="xref">[QUIC-INVARIANTS]</a>.</p>
+<p id="rfc.section.2.1.p.3">Short headers are used after connection establishment, and contain only an optional destination connection ID and the spin bit for RTT measurement.</p>
+<p id="rfc.section.2.1.p.4">The following information is exposed in QUIC packet headers:</p>
 <p></p>
 
 <ul>
-<li>header type: the long header has a 7-bit packet type field following the Header Form bit. Header types correspond to stages of the handshake; see Section 4.1 of <a href="#QUIC-TRANSPORT" class="xref">[QUIC-TRANSPORT]</a>.</li>
-<li>version number: The version number is present in the long header, and identifies the version used for that packet. Note that during Version Negotiation (see <a href="#version" class="xref">Section 2.8</a>, and Section 4.3 of <a href="#QUIC-TRANSPORT" class="xref">[QUIC-TRANSPORT]</a>, the version number field has a special value (0x00000000) that identifies the packet as a Version Negotiation packet.</li>
-<li>source and destination connection ID: The source and destination connection IDs are variable-length fields that can be used to identify the connection associated with a QUIC packet, for load-balancing and NAT rebinding purposes; see <a href="#sec-loadbalancing" class="xref">Section 4.3</a> and <a href="#rebinding" class="xref">Section 2.6</a>. The source connection ID corresponds to the destination connection ID the source would like to have on packets sent to it, and is only present on long packet headers. The destination connection ID, if present, is present on both long and short header packets. On long header packets, the length of the connection IDs is also present; on short header packets, the length of the destination connection ID is implicit.</li>
+<li>demux bit: the second most significant bit of the first octet every QUIC packet of the current version is set to 1, for demultiplexing with other UDP-encapsulated protocols.</li>
+<li>latency spin bit: the third most significant bit of first octet in the short packet header. The spin bit is set by endpoints such that  tracking edge transitions can be used to passively observe end-to-end RTT. See <a href="#spin-usage" class="xref">Section 4</a> for further details.</li>
+<li>header type: the long header has a 2 bit packet type field following the Header Form bit. Header types correspond to stages of the handshake; see Section 17.2 of <a href="#QUIC-TRANSPORT" class="xref">[QUIC-TRANSPORT]</a>.</li>
+<li>version number: the version number present in the long header, and identifies the version used for that packet. Note that during Version Negotiation (see <a href="#version" class="xref">Section 2.8</a>, and Section 17.2.1 of <a href="#QUIC-TRANSPORT" class="xref">[QUIC-TRANSPORT]</a>, the version number field has a special value (0x00000000) that identifies the packet as a Version Negotiation packet.</li>
+<li>source and destination connection ID: short and long packet headers carry a destination connection ID, a variable-length field that can be used to identify the connection associated with a QUIC packet, for load-balancing and NAT rebinding purposes; see <a href="#sec-loadbalancing" class="xref">Section 5.3</a> and <a href="#rebinding" class="xref">Section 2.6</a>. Long packet headers additionally carry a source connection ID. The source connection ID corresponds to the destination connection ID the source would like to have on packets sent to it, and is only present on long packet headers. On long header packets, the length of the connection IDs is also present; on short header packets, the length of the destination connection ID is implicit.</li>
 <li>length: the length of the remaining quic packet after the length field, present on long headers. This field is used to implement coalesced packets during the handshake (see <a href="#coalesced" class="xref">Section 2.2</a>).</li>
-<li>packet number: Every packet has an associated packet number; however, this packet number is encrypted, and therefore not of use to on-path observers.  This packet number has a fixed location and length in long headers, and an implicit location and encrypted variable length in short headers.</li>
-<li>key phase: The Key Phase bit, present in short headers identifies the key used to encrypt the packet during key rotation.</li>
+<li>token: Initial packets may contain a token, a variable-length opaque value optionally sent from client to server, used for validating the client&#8217;s address. Retry packets also contain a token, which can be used by the client in an Initial packet on a subsequent connection attempt. The length of the token is explicit in both cases.</li>
+</ul>
+<p id="rfc.section.2.1.p.6">Retry and Version Negotiation packets are not encrypted or obfuscated in any way. For other kinds of packets, other information in the packet headers is cryptographically obfuscated:</p>
+<p></p>
+
+<ul>
+<li>packet number: Most packets (with the exception of Version Negotiation and Retry packets) have an associated packet number; however, this packet number is encrypted, and therefore not of use to on-path observers. The offset of the packet number is encoded in the header for packets with long headers, while it is implicit (depending on Destination Connection ID length) in short header packets. The length of the packet number is cryptographically obfuscated.</li>
+<li>key phase: The Key Phase bit, present in short headers, specifies the keys used to encrypt the packet, supporting key rotation. The Key Phase bit is cryptographically obfuscated.</li>
 </ul>
 <h1 id="rfc.section.2.2">
 <a href="#rfc.section.2.2">2.2.</a> <a href="#coalesced" id="coalesced">Coalesced Packets</a>
@@ -626,7 +644,7 @@ Client                                    Server
 <h1 id="rfc.section.2.6">
 <a href="#rfc.section.2.6">2.6.</a> <a href="#rebinding" id="rebinding">Connection ID and Rebinding</a>
 </h1>
-<p id="rfc.section.2.6.p.1">The connection ID in the QUIC packet headers allows routing of QUIC packets at load balancers on other than five-tuple information, ensuring that related flows are appropriately balanced together; and to allow rebinding of a connection after one of the endpoint&#8217;s addresses changes - usually the client&#8217;s, in the case of the HTTP binding. Client and server negotiate connection IDs during the handshake; typically, however, only the server will request a connection ID for the lifetime of the connection. Connection IDs for either endpoint may change during the lifetime of a connection, with the new connection ID being negotiated via encrypted frames. See Section 6.1 of <a href="#QUIC-TRANSPORT" class="xref">[QUIC-TRANSPORT]</a>.</p>
+<p id="rfc.section.2.6.p.1">The connection ID in the QUIC packet headers allows routing of QUIC packets at load balancers on other than five-tuple information, ensuring that related flows are appropriately balanced together; and to allow rebinding of a connection after one of the endpoint&#8217;s addresses changes - usually the client&#8217;s, in the case of the HTTP binding. Client and server negotiate connection IDs during the handshake; typically, however, only the server will request a connection ID for the lifetime of the connection. Connection IDs for either endpoint may change during the lifetime of a connection, with the new connection ID being negotiated via encrypted frames. See Section 5.1 of <a href="#QUIC-TRANSPORT" class="xref">[QUIC-TRANSPORT]</a>.</p>
 <h1 id="rfc.section.2.7">
 <a href="#rfc.section.2.7">2.7.</a> <a href="#packetnumber" id="packetnumber">Packet Numbers</a>
 </h1>
@@ -645,6 +663,7 @@ Client                                    Server
 </h1>
 <p id="rfc.section.3.1.p.1">The QUIC wire image is not specifically designed to be distinguishable from other UDP traffic.</p>
 <p id="rfc.section.3.1.p.2">The only application binding currently defined for QUIC is HTTP <a href="#QUIC-HTTP" class="xref">[QUIC-HTTP]</a>. HTTP over QUIC uses UDP port 443 by default, although URLs referring to resources available over HTTP over QUIC may specify alternate port numbers. Simple assumptions about whether a given flow is using QUIC based upon a UDP port number may therefore not hold; see also <a href="#RFC7605" class="xref">[RFC7605]</a> section 5.</p>
+<p id="rfc.section.3.1.p.3">While the second most significant bit (0x40) of the first octet is always set to 1 in QUIC packets of the current version, this is not a recommended method of recognizing QUIC traffic, as it only provides one bit of information and is quite prone to collide with UDP-based protocols other than those that this static bit is meant to allow multiplexing with.</p>
 <h1 id="rfc.section.3.1.1">
 <a href="#rfc.section.3.1.1">3.1.1.</a> <a href="#identifying-negotiated-version" id="identifying-negotiated-version">Identifying Negotiated Version</a>
 </h1>
@@ -658,7 +677,8 @@ Client                                    Server
 <h1 id="rfc.section.3.2">
 <a href="#rfc.section.3.2">3.2.</a> <a href="#sec-confirm" id="sec-confirm">Connection confirmation</a>
 </h1>
-<p id="rfc.section.3.2.p.1">Connection establishment uses Initial, Handshake, and Retry packets containing a TLS handshake. Connection establishment can therefore be detected using heuristics similar to those used to detect TLS over TCP. A client using 0-RTT connection may also send data packets in 0-RTT Protected packets directly after the Initial packet containing the TLS Client Hello. Since these packets may be reordered in the network, note that 0-RTT Protected data packets may be seen before the Initial packet. Note that only clients send Initial packets, so the sides of a connection can be distinguished by QUIC packet type in the handshake.</p>
+<p id="rfc.section.3.2.p.1">Connection establishment uses Initial, Handshake, and Retry packets containing a TLS handshake. Connection establishment can therefore be detected using heuristics similar to those used to detect TLS over TCP. A client using 0-RTT connection may also send data packets in 0-RTT Protected packets directly after the Initial packet containing the TLS Client Hello. Since these packets may be reordered in the network, note that 0-RTT Protected data packets may be seen before the Initial packet.</p>
+<p id="rfc.section.3.2.p.2">Note that clients send Initial packets before servers do, servers send Handshake packets before  clients do, and only clients send Initial packets with tokens, so the sides of a connection can be generally be confirmed by an on-path observer. An attempted connection after Retry can be detected by correlating the token on the Retry with the token on the subsequent Initial packet.</p>
 <h1 id="rfc.section.3.3">
 <a href="#rfc.section.3.3">3.3.</a> <a href="#sec-server" id="sec-server">Application Identification</a>
 </h1>
@@ -668,83 +688,104 @@ Client                                    Server
 <a href="#rfc.section.3.4">3.4.</a> <a href="#sec-flow-association" id="sec-flow-association">Flow association</a>
 </h1>
 <p id="rfc.section.3.4.p.1">The QUIC Connection ID (see <a href="#rebinding" class="xref">Section 2.6</a>) is designed to allow an on-path device such as a load-balancer to associate two flows as identified by five-tuple when the address and port of one of the endpoints changes; e.g. due to NAT rebinding or server IP address migration. An observer keeping flow state can associate a connection ID with a given flow, and can associate a known flow with a new flow when when observing a packet sharing a connection ID and one endpoint address (IP address and port) with the known flow.</p>
-<p id="rfc.section.3.4.p.2">The connection ID to be used for a long-running flow is chosen by the server (see <a href="#QUIC-TRANSPORT" class="xref">[QUIC-TRANSPORT]</a> section 5.6) during the handshake. This value should be treated as opaque; see <a href="#sec-loadbalancing" class="xref">Section 4.3</a> for caveats regarding connection ID selection at servers.</p>
+<p id="rfc.section.3.4.p.2">However, since the connection ID may change multiple times during the lifetime of a flow, and the negotiation of connection ID changes is encrypted, packets with the same 5-tuple but different connection IDs may or may not belong to the same connection.</p>
+<p id="rfc.section.3.4.p.3">The connection ID value should be treated as opaque; see <a href="#sec-loadbalancing" class="xref">Section 5.3</a> for caveats regarding connection ID selection at servers.</p>
 <h1 id="rfc.section.3.5">
 <a href="#rfc.section.3.5">3.5.</a> <a href="#sec-teardown" id="sec-teardown">Flow teardown</a>
 </h1>
 <p id="rfc.section.3.5.p.1">The QUIC does not expose the end of a connection; the only indication to on-path devices that a flow has ended is that packets are no longer observed. Stateful devices on path such as NATs and firewalls must therefore use idle timeouts to determine when to drop state for QUIC flows.</p>
 <p id="rfc.section.3.5.p.2">Changes to this behavior have been discussed in the working group, but there is no current proposal to implement these changes:  see https://github.com/quicwg/base-drafts/issues/602.</p>
 <h1 id="rfc.section.3.6">
-<a href="#rfc.section.3.6">3.6.</a> <a href="#sec-rtt" id="sec-rtt">Round-trip time measurement</a>
+<a href="#rfc.section.3.6">3.6.</a> <a href="#sec-rtt" id="sec-rtt">Round-Trip Time (RTT) Measurement</a>
 </h1>
-<p id="rfc.section.3.6.p.1">Round-trip time of QUIC flows can be inferred by observation once per flow, during the handshake, as in passive TCP measurement; this requires parsing of the QUIC packet header and recognition of the handshake, as illustrated in <a href="#handshake" class="xref">Section 2.4</a>.</p>
-<p id="rfc.section.3.6.p.2">In the common case, the delay between the Initial packet containing the TLS Client Hello and the Handshake packet containing the TLS Server Hello represents the RTT component on the path between the observer and the server.  The delay between the TLS Server Hello and the Handshake packet containing the TLS Finished message sent by the client represents the RTT component on the path between the observer and the client. While the client may send 0-RTT Protected packets after the Initial packet during 0-RTT connection re-establishment, these can be ignored for RTT measurement purposes.</p>
-<p id="rfc.section.3.6.p.3">Handshake RTT can be measured by adding the client-to-observer and observer-to-server RTT components together. This measurement necessarily includes any transport and application layer delay at both sides.</p>
-<p id="rfc.section.3.6.p.4">The spin bit experiment, detailed in <a href="#QUIC-SPIN" class="xref">[QUIC-SPIN]</a>, provides an additional method to measure intraflow per-flow RTT.  When a QUIC flow is sending at full rate (i.e., neither application nor flow control limited), the latency spin bit described in that document changes value once per round-trip time (RTT). An on-path observer can observe the time difference between edges in the spin bit signal in a single direction to measure one sample of end-to-end RTT. Note that this measurement, as with passive RTT measurement for TCP, includes any transport protocol delay (e.g., delayed sending of acknowledgements) and/or application layer delay (e.g., waiting for a request to complete). It therefore provides devices on path a good instantaneous estimate of the RTT as experienced by the application. A simple linear smoothing or moving minimum filter can be applied to the stream of RTT information to get a more stable estimate.</p>
-<p id="rfc.section.3.6.p.5">An on-path observer that can see traffic in both directions (from client to server and from server to client) can also use the spin bit to measure &#8220;upstream&#8221; and &#8220;downstream&#8221; component RTT; i.e, the component of the end-to-end RTT attributable to the paths between the observer and the server and the observer and the client, respectively. It does this by measuring the delay between a spin edge observed in the upstream direction and that observed in the downstream direction, and vice versa.</p>
-<p id="rfc.section.3.6.p.6">Application-limited and flow-control-limited senders can have application and transport layer delay, respectively, that are much greater than network RTT.  Therefore, the spin bit provides network latency information only when the sender is neither application nor flow control limited. When the sender is application-limited by periodic application traffic, where that period is longer than the RTT, measuring the spin bit provides information about the application period, not the RTT. Simple heuristics based on the observed data rate per flow or changes in the RTT series can be used to reject bad RTT samples due to application or flow control limitation.</p>
-<p id="rfc.section.3.6.p.7">Since the spin bit logic at each endpoint considers only samples on packets that advance the largest packet number seen, signal generation itself is resistant to reordering. However, reordering can cause problems at an observer by causing spurious edge detection and therefore low RTT estimates, if reordering occurs across a spin bit flip in the stream. This can be probabilistically mitigated by the observer also tracking the low-order bits of the packet number, and rejecting edges that appear out-of-order <a href="#RFC4737" class="xref">[RFC4737]</a>.</p>
-<h1 id="rfc.section.3.7">
-<a href="#rfc.section.3.7">3.7.</a> <a href="#sec-symmetry" id="sec-symmetry">Flow symmetry measurement</a>
+<p id="rfc.section.3.6.p.1">Round-trip time of QUIC flows can be inferred by observation once per flow, during the handshake, as in passive TCP measurement; this requires parsing of the QUIC packet header and recognition of the handshake, as illustrated in <a href="#handshake" class="xref">Section 2.4</a>. It can also be inferred during the flow&#8217;s lifetime, if the endpoints use the spin bit facility described below and in <a href="#QUIC-TRANSPORT" class="xref">[QUIC-TRANSPORT]</a>, section 17.3.1.</p>
+<h1 id="rfc.section.3.6.1">
+<a href="#rfc.section.3.6.1">3.6.1.</a> <a href="#measuring-initial-rtt" id="measuring-initial-rtt">Measuring initial RTT</a>
 </h1>
-<p id="rfc.section.3.7.p.1">QUIC explicitly exposes which side of a connection is a client and which side is a server during the handshake. In addition, the symmerty of a flow (whether primarily client-to-server, primarily server-to-client, or roughly bidirectional, as input to basic traffic classification techniques) can be inferred through the measurement of data rate in each direction. While QUIC traffic is protected and ACKS may be padded, padding is not required.</p>
+<p id="rfc.section.3.6.1.p.1">In the common case, the delay between the Initial packet containing the TLS Client Hello and the Handshake packet containing the TLS Server Hello represents the RTT component on the path between the observer and the server.  The delay between the TLS Server Hello and the Handshake packet containing the TLS Finished message sent by the client represents the RTT component on the path between the observer and the client. While the client may send 0-RTT Protected packets after the Initial packet during 0-RTT connection re-establishment, these can be ignored for RTT measurement purposes.</p>
+<p id="rfc.section.3.6.1.p.2">Handshake RTT can be measured by adding the client-to-observer and observer-to-server RTT components together. This measurement necessarily includes any transport and application layer delay at both sides.</p>
 <h1 id="rfc.section.4">
-<a href="#rfc.section.4">4.</a> <a href="#specific-network-management-tasks" id="specific-network-management-tasks">Specific Network Management Tasks</a>
+<a href="#rfc.section.4">4.</a> <a href="#spin-usage" id="spin-usage">Using the Spin Bit for Passive RTT Measurement</a>
 </h1>
-<p id="rfc.section.4.p.1">In this section, we address specific network management and measurement techniques and how QUIC&#8217;s design impacts them.</p>
+<p id="rfc.section.4.p.1">The spin bit provides an additional method to measure per-flow RTT from observation points on the network path throughout the duration of a connection.  Endpoint participation in spin bit signaling is optional in QUIC. That is, while its location is fixed in this version of QUIC, an endpoint can unilaterally choose to not support &#8220;spinning&#8221; the bit. Use of the spin bit for RTT measurement by devices on path is only possible when both endpoints enable it.  Some endpoints may disable use of the the spin bit by default, others only in specific deployment scenarios, e.g. for servers and clients where the RTT would reveal the presence of a VPN or proxy. In order to not make these connections identifiable based on the usage of the spin bit, it is recommended that all endpoints disable &#8220;spinning&#8221; randomly for at least one eighth of connections, even if otherwise enabled by default. An endpoint not participating in spin bit signaling for a given connection can use a fixed spin value for the duration of the connection, or can set the bit randomly on each packet sent.</p>
+<p id="rfc.section.4.p.2">When in use and a QUIC flow sends data continuously, the latency spin bit in each direction changes value once per round-trip time (RTT). An on-path observer can observe the time difference between edges (changes from 1 to 0 or 0 to 1) in the spin bit signal in a single direction to measure one sample of end-to-end RTT.</p>
+<p id="rfc.section.4.p.3">Note that this measurement, as with passive RTT measurement for TCP, includes any transport protocol delay (e.g., delayed sending of acknowledgements) and/or application layer delay (e.g., waiting for a response to be generated). It therefore provides devices on path a good instantaneous estimate of the RTT as experienced by the application. A simple linear smoothing or moving minimum filter can be applied to the stream of RTT information to get a more stable estimate.</p>
+<p id="rfc.section.4.p.4">However, application-limited and flow-control-limited senders can have application and transport layer delay, respectively, that are much greater than network RTT. When the sender is application-limited and e.g. only sends small amount of periodic application traffic, where that period is longer than the RTT, measuring the spin bit provides information about the application period, not the network RTT.</p>
+<p id="rfc.section.4.p.5">Since the spin bit logic at each endpoint considers only samples from packets that advance the largest packet number, signal generation itself is resistant to reordering. However, reordering can cause problems at an observer by causing spurious edge detection and therefore low RTT estimates, if reordering occurs across a spin-bit flip in the stream.</p>
+<p id="rfc.section.4.p.6">Simple heuristics based on the observed data rate per flow or changes in the RTT series can be used to reject bad RTT samples due to lost or reordered edges in the spin signal, as well as application or flow control limitation; for example, QoF <a href="#TMA-QOF" class="xref">[TMA-QOF]</a> rejects component RTTs significantly higher than RTTs over the history of the flow. These heuristics may use the handshake RTT as an initial RTT estimate for a given flow. Usually such heuristics would also detect if the spin is either constant or randomly set for a connection.</p>
+<p id="rfc.section.4.p.7">An on-path observer that can see traffic in both directions (from client to server and from server to client) can also use the spin bit to measure &#8220;upstream&#8221; and &#8220;downstream&#8221; component RTT; i.e, the component of the end-to-end RTT attributable to the paths between the observer and the server and the observer and the client, respectively. It does this by measuring the delay between a spin edge observed in the upstream direction and that observed in the downstream direction, and vice versa.</p>
 <h1 id="rfc.section.4.1">
-<a href="#rfc.section.4.1">4.1.</a> <a href="#sec-stateful" id="sec-stateful">Stateful treatment of QUIC traffic</a>
+<a href="#rfc.section.4.1">4.1.</a> <a href="#sec-symmetry" id="sec-symmetry">Flow symmetry measurement</a>
 </h1>
-<p id="rfc.section.4.1.p.1">Stateful treatment of QUIC traffic is possible through QUIC traffic and version identification (<a href="#sec-identifying" class="xref">Section 3.1</a>) and observation of the handshake for connection confirmation (<a href="#sec-confirm" class="xref">Section 3.2</a>). The lack of any visible end-of-flow signal (<a href="#sec-teardown" class="xref">Section 3.5</a>) means that this state must be purged either through timers or through least-recently-used eviction, depending on application requirements.</p>
-<h1 id="rfc.section.4.2">
-<a href="#rfc.section.4.2">4.2.</a> <a href="#passive-network-performance-measurement-and-troubleshooting" id="passive-network-performance-measurement-and-troubleshooting">Passive network performance measurement and troubleshooting</a>
-</h1>
-<p id="rfc.section.4.2.p.1">Limited RTT measurement is possible by passive observation of QUIC traffic; see <a href="#sec-rtt" class="xref">Section 3.6</a>. No passive measurement of loss is possible with the present wire image. Extremely limited observation of upstream congestion may be possible via the observation of CE markings on ECN-enabled QUIC traffic.</p>
-<h1 id="rfc.section.4.3">
-<a href="#rfc.section.4.3">4.3.</a> <a href="#sec-loadbalancing" id="sec-loadbalancing">Server cooperation with load balancers</a>
-</h1>
-<p id="rfc.section.4.3.p.1">In the case of content distribution networking architectures including load balancers, the connection ID provides a way for the server to signal information about the desired treatment of a flow to the load balancers. Guidance on assigning connection IDs is given in <a href="#QUIC-APPLICABILITY" class="xref">[QUIC-APPLICABILITY]</a>.</p>
-<h1 id="rfc.section.4.4">
-<a href="#rfc.section.4.4">4.4.</a> <a href="#sec-ddos-dec" id="sec-ddos-dec">DDoS Detection and Mitigation</a>
-</h1>
-<p id="rfc.section.4.4.p.1">Current practices in detection and mitigation of Distributed Denial of Service (DDoS) attacks generally involve passive measurement using network flow data <a href="#RFC7011" class="xref">[RFC7011]</a>, classification of traffic into &#8220;good&#8221; (productive) and &#8220;bad&#8221; (DoS) flows, and filtering of these bad flows in a &#8220;scrubbing&#8221; environment. Key to successful DDoS mitigation is efficient classification of this traffic.</p>
-<p id="rfc.section.4.4.p.2">Limited first-packet garbage detection as in <a href="#sec-garbage" class="xref">Section 3.1.2</a> and stateful tracking of QUIC traffic as in <a href="#sec-stateful" class="xref">Section 4.1</a> above can be used in this classification step.</p>
-<p id="rfc.section.4.4.p.3">Note that the use of a connection ID to support connection migration renders 5-tuple based filtering insufficient, and requires more state to be maintained by DDoS defense systems, and linkability resistance in connection ID update mechanisms means that a connection ID aware DDoS defense system must have the same information about flows as the load balancer.</p>
-<p id="rfc.section.4.4.p.4">However, it is questionable if connection migrations needs to be supported in a DDOS attack. If the connection migration is not visible to the network that performs the DDoS detection, an active, migrated QUIC connection may be blocked by such a system under attack. However, a defense system might simply rely on the fast resumption mechanism provided by QUIC.</p>
-<h1 id="rfc.section.4.5">
-<a href="#rfc.section.4.5">4.5.</a> <a href="#qos-support-and-ecmp" id="qos-support-and-ecmp">QoS support and ECMP</a>
-</h1>
-<p id="rfc.section.4.5.p.1">[EDITOR&#8217;S NOTE: this is a bit speculative; keep?]</p>
-<p id="rfc.section.4.5.p.2">QUIC does not provide any additional information on requirements on Quality of Service (QoS) provided from the network. QUIC assumes that all packets with the same 5-tuple {dest addr, source addr, protocol, dest port, source port} will receive similar network treatment.  That means all stream that are multiplexed over the same QUIC connection require the same network treatment and are handled by the same congestion controller. If differential network treatment is desired, multiple QUIC connections to the same server might be used, given that establishing a new connection using 0-RTT support is cheap and fast.</p>
-<p id="rfc.section.4.5.p.3">QoS mechanisms in the network MAY also use the connection ID for service differentiation, as a change of connection ID is bound to a change of address which anyway is likely to lead to a re-route on a different path with different network characteristics.</p>
-<p id="rfc.section.4.5.p.4">Given that QUIC is more tolerant of packet re-ordering than TCP (see <a href="#packetnumber" class="xref">Section 2.7</a>), Equal-cost multi-path routing (ECMP) does not necessarily need to be flow based.  However, 5-tuple (plus eventually connection ID if present) matching is still beneficial for QoS given all packets are handled by the same congestion controller.</p>
+<p id="rfc.section.4.1.p.1">QUIC explicitly exposes which side of a connection is a client and which side is a server during the handshake. In addition, the symmerty of a flow (whether primarily client-to-server, primarily server-to-client, or roughly bidirectional, as input to basic traffic classification techniques) can be inferred through the measurement of data rate in each direction. While QUIC traffic is protected and ACKS may be padded, padding is not required.</p>
 <h1 id="rfc.section.5">
-<a href="#rfc.section.5">5.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a>
+<a href="#rfc.section.5">5.</a> <a href="#specific-network-management-tasks" id="specific-network-management-tasks">Specific Network Management Tasks</a>
 </h1>
-<p id="rfc.section.5.p.1">This document has no actions for IANA.</p>
+<p id="rfc.section.5.p.1">In this section, we address specific network management and measurement techniques and how QUIC&#8217;s design impacts them.</p>
+<h1 id="rfc.section.5.1">
+<a href="#rfc.section.5.1">5.1.</a> <a href="#sec-stateful" id="sec-stateful">Stateful treatment of QUIC traffic</a>
+</h1>
+<p id="rfc.section.5.1.p.1">Stateful treatment of QUIC traffic is possible through QUIC traffic and version identification (<a href="#sec-identifying" class="xref">Section 3.1</a>) and observation of the handshake for connection confirmation (<a href="#sec-confirm" class="xref">Section 3.2</a>). The lack of any visible end-of-flow signal (<a href="#sec-teardown" class="xref">Section 3.5</a>) means that this state must be purged either through timers or through least-recently-used eviction, depending on application requirements.</p>
+<h1 id="rfc.section.5.2">
+<a href="#rfc.section.5.2">5.2.</a> <a href="#passive-network-performance-measurement-and-troubleshooting" id="passive-network-performance-measurement-and-troubleshooting">Passive network performance measurement and troubleshooting</a>
+</h1>
+<p id="rfc.section.5.2.p.1">Limited RTT measurement is possible by passive observation of QUIC traffic; see <a href="#sec-rtt" class="xref">Section 3.6</a>. No passive measurement of loss is possible with the present wire image. Extremely limited observation of upstream congestion may be possible via the observation of CE markings on ECN-enabled QUIC traffic.</p>
+<h1 id="rfc.section.5.3">
+<a href="#rfc.section.5.3">5.3.</a> <a href="#sec-loadbalancing" id="sec-loadbalancing">Server cooperation with load balancers</a>
+</h1>
+<p id="rfc.section.5.3.p.1">In the case of content distribution networking architectures including load balancers, the connection ID provides a way for the server to signal information about the desired treatment of a flow to the load balancers. Guidance on assigning connection IDs is given in <a href="#QUIC-APPLICABILITY" class="xref">[QUIC-APPLICABILITY]</a>.</p>
+<h1 id="rfc.section.5.4">
+<a href="#rfc.section.5.4">5.4.</a> <a href="#sec-ddos-dec" id="sec-ddos-dec">DDoS Detection and Mitigation</a>
+</h1>
+<p id="rfc.section.5.4.p.1">Current practices in detection and mitigation of Distributed Denial of Service (DDoS) attacks generally involve passive measurement using network flow data <a href="#RFC7011" class="xref">[RFC7011]</a>, classification of traffic into &#8220;good&#8221; (productive) and &#8220;bad&#8221; (DoS) flows, and filtering of these bad flows in a &#8220;scrubbing&#8221; environment. Key to successful DDoS mitigation is efficient classification of this traffic.</p>
+<p id="rfc.section.5.4.p.2">Limited first-packet garbage detection as in <a href="#sec-garbage" class="xref">Section 3.1.2</a> and stateful tracking of QUIC traffic as in <a href="#sec-stateful" class="xref">Section 5.1</a> above can be used in this classification step.</p>
+<p id="rfc.section.5.4.p.3">Note that the use of a connection ID to support connection migration renders 5-tuple based filtering insufficient, and requires more state to be maintained by DDoS defense systems, and linkability resistance in connection ID update mechanisms means that a connection ID aware DDoS defense system must have the same information about flows as the load balancer.</p>
+<p id="rfc.section.5.4.p.4">However, it is questionable if connection migrations needs to be supported in a DDOS attack. If the connection migration is not visible to the network that performs the DDoS detection, an active, migrated QUIC connection may be blocked by such a system under attack. However, a defense system might simply rely on the fast resumption mechanism provided by QUIC.</p>
+<h1 id="rfc.section.5.5">
+<a href="#rfc.section.5.5">5.5.</a> <a href="#distinguishing-acknowledgment-traffic" id="distinguishing-acknowledgment-traffic">Distinguishing acknowledgment traffic</a>
+</h1>
+<p id="rfc.section.5.5.p.1">Some deployed in-network functions distinguish pure-acknowledgment (ACK) packets from packets carrying upper-layer data in order to attempt to enhance performance, for example by queueing ACKs differently or manipulating ACK signaling. Distinguishing ACK packets is trivial in TCP, but not supported by QUIC, since acknowledgment signaling is carried inside QUIC&#8217;s encrypted payload, and ACK manipulation is impossible. Specifically, heuristics attempting to distinguish ACK-only packets from payload-carrying packets based on packet size are likely to fail, and are emphatically NOT RECOMMENDED.</p>
+<h1 id="rfc.section.5.6">
+<a href="#rfc.section.5.6">5.6.</a> <a href="#qos-support-and-ecmp" id="qos-support-and-ecmp">QoS support and ECMP</a>
+</h1>
+<p id="rfc.section.5.6.p.1">[EDITOR&#8217;S NOTE: this is a bit speculative; keep?]</p>
+<p id="rfc.section.5.6.p.2">QUIC does not provide any additional information on requirements on Quality of Service (QoS) provided from the network. QUIC assumes that all packets with the same 5-tuple {dest addr, source addr, protocol, dest port, source port} will receive similar network treatment.  That means all stream that are multiplexed over the same QUIC connection require the same network treatment and are handled by the same congestion controller. If differential network treatment is desired, multiple QUIC connections to the same server might be used, given that establishing a new connection using 0-RTT support is cheap and fast.</p>
+<p id="rfc.section.5.6.p.3">QoS mechanisms in the network MAY also use the connection ID for service differentiation, as a change of connection ID is bound to a change of address which anyway is likely to lead to a re-route on a different path with different network characteristics.</p>
+<p id="rfc.section.5.6.p.4">Given that QUIC is more tolerant of packet re-ordering than TCP (see <a href="#packetnumber" class="xref">Section 2.7</a>), Equal-cost multi-path routing (ECMP) does not necessarily need to be flow based.  However, 5-tuple (plus eventually connection ID if present) matching is still beneficial for QoS given all packets are handled by the same congestion controller.</p>
 <h1 id="rfc.section.6">
-<a href="#rfc.section.6">6.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a>
+<a href="#rfc.section.6">6.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a>
 </h1>
-<p id="rfc.section.6.p.1">Supporting manageability of QUIC traffic inherently involves tradeoffs with the confidentiality of QUIC&#8217;s control information; this entire document is therefore security-relevant.</p>
+<p id="rfc.section.6.p.1">This document has no actions for IANA.</p>
 <h1 id="rfc.section.7">
-<a href="#rfc.section.7">7.</a> <a href="#contributors" id="contributors">Contributors</a>
+<a href="#rfc.section.7">7.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a>
 </h1>
-<p id="rfc.section.7.p.1">Dan Druta contributed text to <a href="#sec-ddos-dec" class="xref">Section 4.4</a>. Igor Lubashev contributed text to <a href="#sec-loadbalancing" class="xref">Section 4.3</a> on the use of the connection ID for load balancing.  Marcus Ilhar contributed text to <a href="#sec-rtt" class="xref">Section 3.6</a> on the use of the spin bit.</p>
+<p id="rfc.section.7.p.1">Supporting manageability of QUIC traffic inherently involves tradeoffs with the confidentiality of QUIC&#8217;s control information; this entire document is therefore security-relevant.</p>
 <h1 id="rfc.section.8">
-<a href="#rfc.section.8">8.</a> <a href="#acknowledgments" id="acknowledgments">Acknowledgments</a>
+<a href="#rfc.section.8">8.</a> <a href="#contributors" id="contributors">Contributors</a>
 </h1>
-<p id="rfc.section.8.p.1">This work is partially supported by the European Commission under Horizon 2020 grant agreement no. 688421 Measurement and Architecture for a Middleboxed Internet (MAMI), and by the Swiss State Secretariat for Education, Research, and Innovation under contract no. 15.0268. This support does not imply endorsement.</p>
+<p id="rfc.section.8.p.1">Dan Druta contributed text to <a href="#sec-ddos-dec" class="xref">Section 5.4</a>. Igor Lubashev contributed text to <a href="#sec-loadbalancing" class="xref">Section 5.3</a> on the use of the connection ID for load balancing.  Marcus Ilhar contributed text to <a href="#sec-rtt" class="xref">Section 3.6</a> on the use of the spin bit.</p>
+<h1 id="rfc.section.9">
+<a href="#rfc.section.9">9.</a> <a href="#acknowledgments" id="acknowledgments">Acknowledgments</a>
+</h1>
+<p id="rfc.section.9.p.1">This work is partially supported by the European Commission under Horizon 2020 grant agreement no. 688421 Measurement and Architecture for a Middleboxed Internet (MAMI), and by the Swiss State Secretariat for Education, Research, and Innovation under contract no. 15.0268. This support does not imply endorsement.</p>
 <h1 id="rfc.references">
-<a href="#rfc.references">9.</a> References</h1>
+<a href="#rfc.references">10.</a> References</h1>
 <h1 id="rfc.references.1">
-<a href="#rfc.references.1">9.1.</a> Normative References</h1>
-<table><tbody><tr>
+<a href="#rfc.references.1">10.1.</a> Normative References</h1>
+<table><tbody>
+<tr>
 <td class="reference"><b id="RFC2119">[RFC2119]</b></td>
 <td class="top">
 <a>Bradner, S.</a>, "<a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>", BCP 14, RFC 2119, DOI 10.17487/RFC2119, March 1997.</td>
-</tr></tbody></table>
+</tr>
+<tr>
+<td class="reference"><b id="RFC8174">[RFC8174]</b></td>
+<td class="top">
+<a>Leiba, B.</a>, "<a href="https://tools.ietf.org/html/rfc8174">Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</a>", BCP 14, RFC 8174, DOI 10.17487/RFC8174, May 2017.</td>
+</tr>
+</tbody></table>
 <h1 id="rfc.references.2">
-<a href="#rfc.references.2">9.2.</a> Informative References</h1>
+<a href="#rfc.references.2">10.2.</a> Informative References</h1>
 <table><tbody>
 <tr>
 <td class="reference"><b id="Ding2015">[Ding2015]</b></td>
@@ -759,37 +800,27 @@ Client                                    Server
 <tr>
 <td class="reference"><b id="QUIC-APPLICABILITY">[QUIC-APPLICABILITY]</b></td>
 <td class="top">
-<a>Kuehlewind, M.</a> and <a>B. Trammell</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-applicability-02">Applicability of the QUIC Transport Protocol</a>", Internet-Draft draft-ietf-quic-applicability-02, July 2018.</td>
+<a>Kuehlewind, M.</a> and <a>B. Trammell</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-applicability-03">Applicability of the QUIC Transport Protocol</a>", Internet-Draft draft-ietf-quic-applicability-03, October 2018.</td>
 </tr>
 <tr>
 <td class="reference"><b id="QUIC-HTTP">[QUIC-HTTP]</b></td>
 <td class="top">
-<a>Bishop, M.</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-http-15">Hypertext Transfer Protocol (HTTP) over QUIC</a>", Internet-Draft draft-ietf-quic-http-15, October 2018.</td>
+<a>Bishop, M.</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-http-19">Hypertext Transfer Protocol Version 3 (HTTP/3)</a>", Internet-Draft draft-ietf-quic-http-19, March 2019.</td>
 </tr>
 <tr>
 <td class="reference"><b id="QUIC-INVARIANTS">[QUIC-INVARIANTS]</b></td>
 <td class="top">
-<a>Thomson, M.</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-invariants-03">Version-Independent Properties of QUIC</a>", Internet-Draft draft-ietf-quic-invariants-03, October 2018.</td>
-</tr>
-<tr>
-<td class="reference"><b id="QUIC-SPIN">[QUIC-SPIN]</b></td>
-<td class="top">
-<a>Trammell, B.</a> and <a>M. Kuehlewind</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-spin-exp-00">The QUIC Latency Spin Bit</a>", Internet-Draft draft-ietf-quic-spin-exp-00, April 2018.</td>
+<a>Thomson, M.</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-invariants-04">Version-Independent Properties of QUIC</a>", Internet-Draft draft-ietf-quic-invariants-04, April 2019.</td>
 </tr>
 <tr>
 <td class="reference"><b id="QUIC-TLS">[QUIC-TLS]</b></td>
 <td class="top">
-<a>Thomson, M.</a> and <a>S. Turner</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-tls-15">Using Transport Layer Security (TLS) to Secure QUIC</a>", Internet-Draft draft-ietf-quic-tls-15, October 2018.</td>
+<a>Thomson, M.</a> and <a>S. Turner</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-tls-19">Using TLS to Secure QUIC</a>", Internet-Draft draft-ietf-quic-tls-19, March 2019.</td>
 </tr>
 <tr>
 <td class="reference"><b id="QUIC-TRANSPORT">[QUIC-TRANSPORT]</b></td>
 <td class="top">
-<a>Iyengar, J.</a> and <a>M. Thomson</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-transport-15">QUIC: A UDP-Based Multiplexed and Secure Transport</a>", Internet-Draft draft-ietf-quic-transport-15, October 2018.</td>
-</tr>
-<tr>
-<td class="reference"><b id="RFC4737">[RFC4737]</b></td>
-<td class="top">
-<a>Morton, A.</a>, <a>Ciavattone, L.</a>, <a>Ramachandran, G.</a>, <a>Shalunov, S.</a> and <a>J. Perser</a>, "<a href="https://tools.ietf.org/html/rfc4737">Packet Reordering Metrics</a>", RFC 4737, DOI 10.17487/RFC4737, November 2006.</td>
+<a>Iyengar, J.</a> and <a>M. Thomson</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-transport-19">QUIC: A UDP-Based Multiplexed and Secure Transport</a>", Internet-Draft draft-ietf-quic-transport-19, March 2019.</td>
 </tr>
 <tr>
 <td class="reference"><b id="RFC6066">[RFC6066]</b></td>
@@ -819,7 +850,12 @@ Client                                    Server
 <tr>
 <td class="reference"><b id="TLS-ENCRYPT-SNI">[TLS-ENCRYPT-SNI]</b></td>
 <td class="top">
-<a>Huitema, C.</a> and <a>E. Rescorla</a>, "<a href="https://tools.ietf.org/html/draft-ietf-tls-sni-encryption-03">Issues and Requirements for SNI Encryption in TLS</a>", Internet-Draft draft-ietf-tls-sni-encryption-03, May 2018.</td>
+<a>Huitema, C.</a> and <a>E. Rescorla</a>, "<a href="https://tools.ietf.org/html/draft-ietf-tls-sni-encryption-04">Issues and Requirements for SNI Encryption in TLS</a>", Internet-Draft draft-ietf-tls-sni-encryption-04, November 2018.</td>
+</tr>
+<tr>
+<td class="reference"><b id="TMA-QOF">[TMA-QOF]</b></td>
+<td class="top">
+<a>Trammell, B.</a>, <a>Gugelmann, D.</a> and <a>N. Brownlee</a>, "<a>Inline Data Integrity Signals for Passive Measurement (in Proc. TMA 2014)</a>", April 2014.</td>
 </tr>
 <tr>
 <td class="reference"><b id="WIRE-IMAGE">[WIRE-IMAGE]</b></td>

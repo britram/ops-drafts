@@ -83,8 +83,8 @@ table.header td, table#rfc\.headerblock td {
   line-height: 28px;
 }
 
-samp, tt, code, pre {
-  font: 15px Consolas, monospace;
+samp, tt, code, pre, span.tt {
+  font: 13.5px Consolas, monospace;
   font-size-adjust: none;
 }
 pre {
@@ -292,6 +292,7 @@ ul.toc li {
 <link href="#rfc.section.4.1" rel="Chapter" title="4.1 Stream versus Flow Multiplexing">
 <link href="#rfc.section.4.2" rel="Chapter" title="4.2 Packetization and latency">
 <link href="#rfc.section.4.3" rel="Chapter" title="4.3 Prioritization">
+<link href="#rfc.section.4.4" rel="Chapter" title="4.4 Flow Control Deadlocks">
 <link href="#rfc.section.5" rel="Chapter" title="5 Port Selection">
 <link href="#rfc.section.6" rel="Chapter" title="6 Graceful connection closure">
 <link href="#rfc.section.7" rel="Chapter" title="7 Information exposure and the Connection ID">
@@ -299,22 +300,23 @@ ul.toc li {
 <link href="#rfc.section.7.2" rel="Chapter" title="7.2 Mitigating Timing Linkability with Connection ID Migration">
 <link href="#rfc.section.7.3" rel="Chapter" title="7.3 Using Server Retry for Redirection">
 <link href="#rfc.section.8" rel="Chapter" title="8 Use of Versions and Cryptographic Handshake">
-<link href="#rfc.section.9" rel="Chapter" title="9 IANA Considerations">
-<link href="#rfc.section.10" rel="Chapter" title="10 Security Considerations">
-<link href="#rfc.section.11" rel="Chapter" title="11 Contributors">
-<link href="#rfc.section.12" rel="Chapter" title="12 Acknowledgments">
-<link href="#rfc.references" rel="Chapter" title="13 References">
-<link href="#rfc.references.1" rel="Chapter" title="13.1 Normative References">
-<link href="#rfc.references.2" rel="Chapter" title="13.2 Informative References">
+<link href="#rfc.section.9" rel="Chapter" title="9 Enabling New Versions">
+<link href="#rfc.section.10" rel="Chapter" title="10 IANA Considerations">
+<link href="#rfc.section.11" rel="Chapter" title="11 Security Considerations">
+<link href="#rfc.section.12" rel="Chapter" title="12 Contributors">
+<link href="#rfc.section.13" rel="Chapter" title="13 Acknowledgments">
+<link href="#rfc.references" rel="Chapter" title="14 References">
+<link href="#rfc.references.1" rel="Chapter" title="14.1 Normative References">
+<link href="#rfc.references.2" rel="Chapter" title="14.2 Informative References">
 <link href="#rfc.authors" rel="Chapter">
 
 
-  <meta name="generator" content="xml2rfc version 2.10.3 - https://tools.ietf.org/tools/xml2rfc" />
+  <meta name="generator" content="xml2rfc version 2.22.1 - https://tools.ietf.org/tools/xml2rfc" />
   <link rel="schema.dct" href="http://purl.org/dc/terms/" />
 
   <meta name="dct.creator" content="Kuehlewind, M. and B. Trammell" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-quic-applicability-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2018-10-22" />
+  <meta name="dct.issued" scheme="ISO8601" content="2019-04-17" />
   <meta name="dct.abstract" content="This document discusses the applicability of the QUIC transport protocol, focusing on caveats impacting application protocol development and deployment over QUIC. Its intended audience is designers of application protocol mappings to QUIC, and implementors of these application protocols." />
   <meta name="description" content="This document discusses the applicability of the QUIC transport protocol, focusing on caveats impacting application protocol development and deployment over QUIC. Its intended audience is designers of application protocol mappings to QUIC, and implementors of these application protocols." />
 
@@ -338,8 +340,8 @@ ul.toc li {
 <td class="right">ETH Zurich</td>
 </tr>
 <tr>
-<td class="left">Expires: April 25, 2019</td>
-<td class="right">October 22, 2018</td>
+<td class="left">Expires: October 19, 2019</td>
+<td class="right">April 17, 2019</td>
 </tr>
 
     	
@@ -355,9 +357,9 @@ ul.toc li {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on April 25, 2019.</p>
+<p>This Internet-Draft will expire on October 19, 2019.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
-<p>Copyright (c) 2018 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
+<p>Copyright (c) 2019 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
 
   
@@ -387,6 +389,8 @@ ul.toc li {
 </li>
 <li>4.3.   <a href="#rfc.section.4.3">Prioritization</a>
 </li>
+<li>4.4.   <a href="#rfc.section.4.4">Flow Control Deadlocks</a>
+</li>
 </ul><li>5.   <a href="#rfc.section.5">Port Selection</a>
 </li>
 <li>6.   <a href="#rfc.section.6">Graceful connection closure</a>
@@ -401,19 +405,21 @@ ul.toc li {
 </li>
 </ul><li>8.   <a href="#rfc.section.8">Use of Versions and Cryptographic Handshake</a>
 </li>
-<li>9.   <a href="#rfc.section.9">IANA Considerations</a>
+<li>9.   <a href="#rfc.section.9">Enabling New Versions</a>
 </li>
-<li>10.   <a href="#rfc.section.10">Security Considerations</a>
+<li>10.   <a href="#rfc.section.10">IANA Considerations</a>
 </li>
-<li>11.   <a href="#rfc.section.11">Contributors</a>
+<li>11.   <a href="#rfc.section.11">Security Considerations</a>
 </li>
-<li>12.   <a href="#rfc.section.12">Acknowledgments</a>
+<li>12.   <a href="#rfc.section.12">Contributors</a>
 </li>
-<li>13.   <a href="#rfc.references">References</a>
+<li>13.   <a href="#rfc.section.13">Acknowledgments</a>
 </li>
-<ul><li>13.1.   <a href="#rfc.references.1">Normative References</a>
+<li>14.   <a href="#rfc.references">References</a>
 </li>
-<li>13.2.   <a href="#rfc.references.2">Informative References</a>
+<ul><li>14.1.   <a href="#rfc.references.1">Normative References</a>
+</li>
+<li>14.2.   <a href="#rfc.references.2">Informative References</a>
 </li>
 </ul><li><a href="#rfc.authors">Authors' Addresses</a>
 </li>
@@ -488,6 +494,16 @@ ul.toc li {
 </h1>
 <p id="rfc.section.4.3.p.1">Stream prioritization is not exposed to either the network or the receiver.  Prioritization is managed by the sender, and the QUIC transport should provide an interface for applications to prioritize streams <a href="#QUIC" class="xref">[QUIC]</a>. Further applications can implement their own prioritization scheme on top of QUIC: an application protocol that runs on top of QUIC can define explicit messages for signaling priority, such as those defined for HTTP/2; it can define rules that allow an endpoint to determine priority based on context; or it can provide a higher level interface and leave the determination to the application on top.</p>
 <p id="rfc.section.4.3.p.2">Priority handling of retransmissions can be implemented by the sender in the transport layer. <a href="#QUIC" class="xref">[QUIC]</a> recommends to retransmit lost data before new data, unless indicated differently by the application. Currently, QUIC only provides fully reliable stream transmission, which means that prioritization of retransmissions will be beneficial in most cases, by filling in gaps and freeing up the flow control window. For partially reliable or unreliable streams, priority scheduling of retransmissions over data of higher-priority streams might not be desirable. For such streams, QUIC could either provide an explicit interface to control prioritization, or derive the prioritization decision from the reliability level of the stream.</p>
+<h1 id="rfc.section.4.4">
+<a href="#rfc.section.4.4">4.4.</a> <a href="#flow-control-deadlocks" id="flow-control-deadlocks">Flow Control Deadlocks</a>
+</h1>
+<p id="rfc.section.4.4.p.1">Flow control provides a means of managing access to the limited buffers endpoints have for incoming data.  This mechanism limits the amount of data that can be in buffers in endpoints or in transit on the network.  However, there are several ways in which limits can produce conditions that can cause a connection to either perform suboptimally or deadlock.</p>
+<p id="rfc.section.4.4.p.2">Deadlocks in flow control are possible for any protocol that uses QUIC, though whether they become a problem depends on how implementations consume data and provide flow control credit.  Understanding what causes deadlocking might help implementations avoid deadlocks.</p>
+<p id="rfc.section.4.4.p.3">Large messages can produce deadlocking if the recipient does not process the message incrementally.  If the message is larger than flow control credit available and the recipient does not release additional flow control credit until the entire message is received and delivered, a deadlock can occur.  This is possible even where stream flow control limits are not reached because connection flow control limits can be consumed by other streams.</p>
+<p id="rfc.section.4.4.p.4">A common flow control implementation technique is for a receiver to extend credit to the sender as a the data consumer reads data. In this setting, a length-prefixed message format makes it easier for the data consumer to leave data unread in the receiver&#8217;s buffers and thereby withhold flow control credit.  If flow control limits prevent the remainder of a message from being sent, a deadlock will result.  A length prefix might also enable the detection of this sort of deadlock.  Where protocols have messages that might be processed as a single unit, reserving flow control credit for the entire message atomically ensures that this style of deadlock is less likely.</p>
+<p id="rfc.section.4.4.p.5">A data consumer can read all data as it becomes available to cause the receiver to extend flow control credit to the sender and reduce the chances of a deadlock.  However, releasing flow control credit might mean that the data consumer might need other means for holding a peer accountable for the state it keeps for partially processed messages.</p>
+<p id="rfc.section.4.4.p.6">Deadlocking can also occur if data on different streams is interdependent.  Suppose that data on one stream arrives before the data on a second stream on which it depends.  A deadlock can occur if the first stream is left unread, preventing the receiver from extending flow control credit for the second stream.  To reduce the likelihood of deadlock for interdependent data, the sender should ensure that dependent data is not sent until the data it depends on has been accounted for in both stream- and connection- level flow control credit.</p>
+<p id="rfc.section.4.4.p.7">Some deadlocking scenarios might be resolved by cancelling affected streams with STOP_SENDING or RST_STREAM.  Cancelling some streams results in the connection being terminated in some protocols.</p>
 <h1 id="rfc.section.5">
 <a href="#rfc.section.5">5.</a> <a href="#port-selection" id="port-selection">Port Selection</a>
 </h1>
@@ -505,7 +521,7 @@ ul.toc li {
 <h1 id="rfc.section.7.1">
 <a href="#rfc.section.7.1">7.1.</a> <a href="#server-generated-connection-id" id="server-generated-connection-id">Server-Generated Connection ID</a>
 </h1>
-<p id="rfc.section.7.1.p.1">QUIC supports a server-generated Connection ID, transmitted to the client during connection establishment (see Section 6.1 of <a href="#QUIC" class="xref">[QUIC]</a>). Servers behind load balancers may need to  propose a Connection ID during the handshake, encoding the identity of the server or information about its load balancing pool, in order to support stateless load balancing. Once the server generates a Connection ID that encodes its identity, every CDN load balancer would be able to forward the packets to that server without retaining connection state.</p>
+<p id="rfc.section.7.1.p.1">QUIC supports a server-generated Connection ID, transmitted to the client during connection establishment (see Section 6.1 of <a href="#QUIC" class="xref">[QUIC]</a>). Servers behind load balancers may need to change the Connection ID during the handshake, encoding the identity of the server or information about its load balancing pool, in order to support stateless load balancing. Once the server generates a Connection ID that encodes its identity, every CDN load balancer would be able to forward the packets to that server without retaining connection state.</p>
 <p id="rfc.section.7.1.p.2">Server-generated connection IDs should seek to obscure any encoding, of routing identities or any other information. Exposing the server mapping would allow linkage of multiple IP addresses to the same host if the server also supports migration. Furthermore, this opens an attack vector on specific servers or pools.</p>
 <p id="rfc.section.7.1.p.3">The best way to obscure an encoding is to appear random to observers, which is most rigorously achieved with encryption.</p>
 <h1 id="rfc.section.7.2">
@@ -524,41 +540,53 @@ ul.toc li {
 <p id="rfc.section.8.p.1">Versioning in QUIC may change the protocol&#8217;s behavior completely, except for the meaning of a few header fields that have been declared to be invariant <a href="#QUIC-INVARIANTS" class="xref">[QUIC-INVARIANTS]</a>. A version of QUIC with a higher version number will not necessarily provide a better service, but might simply provide a different feature set. As such, an application needs to be able to select which versions of QUIC it wants to use.</p>
 <p id="rfc.section.8.p.2">A new version could use an encryption scheme other than TLS 1.3 or higher.  <a href="#QUIC" class="xref">[QUIC]</a> specifies requirements for the cryptographic handshake as currently realized by TLS 1.3 and described in a separate specification <a href="#QUIC-TLS" class="xref">[QUIC-TLS]</a>. This split is performed to enable light-weight versioning with different cryptographic handshakes.</p>
 <h1 id="rfc.section.9">
-<a href="#rfc.section.9">9.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a>
+<a href="#rfc.section.9">9.</a> <a href="#enabling-new-versions" id="enabling-new-versions">Enabling New Versions</a>
 </h1>
-<p id="rfc.section.9.p.1">This document has no actions for IANA.</p>
+<p id="rfc.section.9.p.1">QUIC provides integrity protection for its version negotiation process.  This process assumes that the set of versions that a server supports is fixed.  This complicates the process for deploying new QUIC versions or disabling old versions when servers operate in clusters.</p>
+<p id="rfc.section.9.p.2">A server that rolls out a new version of QUIC can do so in three stages.  Each stage is completed across all server instances before moving to the next stage.</p>
+<p id="rfc.section.9.p.3">In the first stage of deployment, all server instances start accepting new connections with the new version.  The new version can be enabled progressively across a deployment, which allows for selective testing.  This is especially useful when the new version is compatible with an old version, because the new version is more likely to be used.</p>
+<p id="rfc.section.9.p.4">While enabling the new version, servers do not advertise the new version in any Version Negotiation packets they send.  This prevents clients that receive a Version Negotiation packet from attempting to connect to server instances that might not have the new version enabled.</p>
+<p id="rfc.section.9.p.5">During the initial deployment, some clients will have received Version Negotiation packets that indicate that the server does not support the new version.  Other clients might have successfully connected with the new version and so will believe that the server supports the new version.  Therefore, servers need to allow for this ambiguity when validating the negotiated version.</p>
+<p id="rfc.section.9.p.6">The second stage of deployment commences once all server instances are able accept new connections with the new version.  At this point, all servers can start sending the new version in Version Negotiation packets.</p>
+<p id="rfc.section.9.p.7">During the second stage, the server still allows for the possibility that some clients believe the new version to be available and some do not.  This state will persist only for as long as any Version Negotiation packets take to be transmitted and responded to.  So the third stage can follow after a relatively short delay.</p>
+<p id="rfc.section.9.p.8">The third stage completes the process by enabling validation of the negotiation version as though the new version were disabled.</p>
+<p id="rfc.section.9.p.9">The process for disabling an old version or rolling back the introduction of a new version uses the same process in reverse.  Servers disable validation of the old version, stop sending the old version in Version Negotiation packets, then the old version is no longer accepted.</p>
 <h1 id="rfc.section.10">
-<a href="#rfc.section.10">10.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a>
+<a href="#rfc.section.10">10.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a>
 </h1>
-<p id="rfc.section.10.p.1">See the security considerations in <a href="#QUIC" class="xref">[QUIC]</a> and <a href="#QUIC-TLS" class="xref">[QUIC-TLS]</a>; the security considerations for the underlying transport protocol are relevant for applications using QUIC, as well.</p>
-<p id="rfc.section.10.p.2">Application developers should note that any fallback they use when QUIC cannot be used due to network blocking of UDP SHOULD guarantee the same security properties as QUIC; if this is not possible, the connection SHOULD fail to allow the application to explicitly handle fallback to a less-secure alternative. See <a href="#fallback" class="xref">Section 2</a>.</p>
+<p id="rfc.section.10.p.1">This document has no actions for IANA.</p>
 <h1 id="rfc.section.11">
-<a href="#rfc.section.11">11.</a> <a href="#contributors" id="contributors">Contributors</a>
+<a href="#rfc.section.11">11.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a>
 </h1>
-<p id="rfc.section.11.p.1">Igor Lubashev contributed text to <a href="#connid" class="xref">Section 7</a> on server-selected Connection IDs.</p>
+<p id="rfc.section.11.p.1">See the security considerations in <a href="#QUIC" class="xref">[QUIC]</a> and <a href="#QUIC-TLS" class="xref">[QUIC-TLS]</a>; the security considerations for the underlying transport protocol are relevant for applications using QUIC, as well.</p>
+<p id="rfc.section.11.p.2">Application developers should note that any fallback they use when QUIC cannot be used due to network blocking of UDP SHOULD guarantee the same security properties as QUIC; if this is not possible, the connection SHOULD fail to allow the application to explicitly handle fallback to a less-secure alternative. See <a href="#fallback" class="xref">Section 2</a>.</p>
 <h1 id="rfc.section.12">
-<a href="#rfc.section.12">12.</a> <a href="#acknowledgments" id="acknowledgments">Acknowledgments</a>
+<a href="#rfc.section.12">12.</a> <a href="#contributors" id="contributors">Contributors</a>
 </h1>
-<p id="rfc.section.12.p.1">This work is partially supported by the European Commission under Horizon 2020 grant agreement no. 688421 Measurement and Architecture for a Middleboxed Internet (MAMI), and by the Swiss State Secretariat for Education, Research, and Innovation under contract no. 15.0268. This support does not imply endorsement.</p>
+<p id="rfc.section.12.p.1">Igor Lubashev contributed text to <a href="#connid" class="xref">Section 7</a> on server-selected Connection IDs.</p>
+<h1 id="rfc.section.13">
+<a href="#rfc.section.13">13.</a> <a href="#acknowledgments" id="acknowledgments">Acknowledgments</a>
+</h1>
+<p id="rfc.section.13.p.1">This work is partially supported by the European Commission under Horizon 2020 grant agreement no. 688421 Measurement and Architecture for a Middleboxed Internet (MAMI), and by the Swiss State Secretariat for Education, Research, and Innovation under contract no. 15.0268. This support does not imply endorsement.</p>
 <h1 id="rfc.references">
-<a href="#rfc.references">13.</a> References</h1>
+<a href="#rfc.references">14.</a> References</h1>
 <h1 id="rfc.references.1">
-<a href="#rfc.references.1">13.1.</a> Normative References</h1>
+<a href="#rfc.references.1">14.1.</a> Normative References</h1>
 <table><tbody>
 <tr>
 <td class="reference"><b id="QUIC">[QUIC]</b></td>
 <td class="top">
-<a>Iyengar, J.</a> and <a>M. Thomson</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-transport-15">QUIC: A UDP-Based Multiplexed and Secure Transport</a>", Internet-Draft draft-ietf-quic-transport-15, October 2018.</td>
+<a>Iyengar, J.</a> and <a>M. Thomson</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-transport-19">QUIC: A UDP-Based Multiplexed and Secure Transport</a>", Internet-Draft draft-ietf-quic-transport-19, March 2019.</td>
 </tr>
 <tr>
 <td class="reference"><b id="QUIC-INVARIANTS">[QUIC-INVARIANTS]</b></td>
 <td class="top">
-<a>Thomson, M.</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-invariants-03">Version-Independent Properties of QUIC</a>", Internet-Draft draft-ietf-quic-invariants-03, October 2018.</td>
+<a>Thomson, M.</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-invariants-04">Version-Independent Properties of QUIC</a>", Internet-Draft draft-ietf-quic-invariants-04, April 2019.</td>
 </tr>
 <tr>
 <td class="reference"><b id="QUIC-TLS">[QUIC-TLS]</b></td>
 <td class="top">
-<a>Thomson, M.</a> and <a>S. Turner</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-tls-15">Using Transport Layer Security (TLS) to Secure QUIC</a>", Internet-Draft draft-ietf-quic-tls-15, October 2018.</td>
+<a>Thomson, M.</a> and <a>S. Turner</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-tls-19">Using TLS to Secure QUIC</a>", Internet-Draft draft-ietf-quic-tls-19, March 2019.</td>
 </tr>
 <tr>
 <td class="reference"><b id="RFC2119">[RFC2119]</b></td>
@@ -573,11 +601,11 @@ ul.toc li {
 <tr>
 <td class="reference"><b id="TLS13">[TLS13]</b></td>
 <td class="top">
-<a>Thomson, M.</a> and <a>S. Turner</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-tls-15">Using Transport Layer Security (TLS) to Secure QUIC</a>", Internet-Draft draft-ietf-quic-tls-15, October 2018.</td>
+<a>Thomson, M.</a> and <a>S. Turner</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-tls-19">Using TLS to Secure QUIC</a>", Internet-Draft draft-ietf-quic-tls-19, March 2019.</td>
 </tr>
 </tbody></table>
 <h1 id="rfc.references.2">
-<a href="#rfc.references.2">13.2.</a> Informative References</h1>
+<a href="#rfc.references.2">14.2.</a> Informative References</h1>
 <table><tbody>
 <tr>
 <td class="reference"><b id="Edeline16">[Edeline16]</b></td>
@@ -607,7 +635,7 @@ ul.toc li {
 <tr>
 <td class="reference"><b id="QUIC-HTTP">[QUIC-HTTP]</b></td>
 <td class="top">
-<a>Bishop, M.</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-http-15">Hypertext Transfer Protocol (HTTP) over QUIC</a>", Internet-Draft draft-ietf-quic-http-15, October 2018.</td>
+<a>Bishop, M.</a>, "<a href="https://tools.ietf.org/html/draft-ietf-quic-http-19">Hypertext Transfer Protocol Version 3 (HTTP/3)</a>", Internet-Draft draft-ietf-quic-http-19, March 2019.</td>
 </tr>
 <tr>
 <td class="reference"><b id="Swett16">[Swett16]</b></td>

@@ -3,9 +3,10 @@
 
 
 Network Working Group                                      M. Kuehlewind
-Internet-Draft                                               B. Trammell
-Intended status: Informational                                ETH Zurich
-Expires: October 25, 2019                                 April 23, 2019
+Internet-Draft                                                  Ericsson
+Intended status: Informational                               B. Trammell
+Expires: January 5, 2020                                          Google
+                                                           July 04, 2019
 
 
               Manageability of the QUIC Transport Protocol
@@ -34,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 25, 2019.
+   This Internet-Draft will expire on January 5, 2020.
 
 Copyright Notice
 
@@ -48,72 +49,77 @@ Copyright Notice
    carefully, as they describe your rights and restrictions with respect
    to this document.  Code Components extracted from this document must
    include Simplified BSD License text as described in Section 4.e of
+
+
+
+
+Kuehlewind & Trammell    Expires January 5, 2020                [Page 1]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
+
    the Trust Legal Provisions and are provided without warranty as
    described in the Simplified BSD License.
 
-
-
-Kuehlewind & Trammell   Expires October 25, 2019                [Page 1]
-
-Internet-Draft             QUIC Manageability                 April 2019
-
-
 Table of Contents
 
-   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
-     1.1.  Notational Conventions  . . . . . . . . . . . . . . . . .   3
-   2.  Features of the QUIC Wire Image . . . . . . . . . . . . . . .   3
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+     1.1.  Notational Conventions  . . . . . . . . . . . . . . . . .   4
+   2.  Features of the QUIC Wire Image . . . . . . . . . . . . . . .   4
      2.1.  QUIC Packet Header Structure  . . . . . . . . . . . . . .   4
      2.2.  Coalesced Packets . . . . . . . . . . . . . . . . . . . .   6
      2.3.  Use of Port Numbers . . . . . . . . . . . . . . . . . . .   6
      2.4.  The QUIC handshake  . . . . . . . . . . . . . . . . . . .   6
-     2.5.  Integrity Protection of the Wire Image  . . . . . . . . .  10
-     2.6.  Connection ID and Rebinding . . . . . . . . . . . . . . .  10
+     2.5.  Integrity Protection of the Wire Image  . . . . . . . . .  11
+     2.6.  Connection ID and Rebinding . . . . . . . . . . . . . . .  11
      2.7.  Packet Numbers  . . . . . . . . . . . . . . . . . . . . .  11
      2.8.  Version Negotiation and Greasing  . . . . . . . . . . . .  11
-   3.  Network-visible information about QUIC flows  . . . . . . . .  11
-     3.1.  Identifying QUIC traffic  . . . . . . . . . . . . . . . .  11
+   3.  Network-visible information about QUIC flows  . . . . . . . .  12
+     3.1.  Identifying QUIC traffic  . . . . . . . . . . . . . . . .  12
        3.1.1.  Identifying Negotiated Version  . . . . . . . . . . .  12
-       3.1.2.  Rejection of Garbage Traffic  . . . . . . . . . . . .  12
-     3.2.  Connection confirmation . . . . . . . . . . . . . . . . .  12
+       3.1.2.  Rejection of Garbage Traffic  . . . . . . . . . . . .  13
+     3.2.  Connection confirmation . . . . . . . . . . . . . . . . .  13
      3.3.  Application Identification  . . . . . . . . . . . . . . .  13
-     3.4.  Flow association  . . . . . . . . . . . . . . . . . . . .  13
+     3.4.  Flow association  . . . . . . . . . . . . . . . . . . . .  14
      3.5.  Flow teardown . . . . . . . . . . . . . . . . . . . . . .  14
-     3.6.  Round-Trip Time (RTT) Measurement . . . . . . . . . . . .  14
-       3.6.1.  Measuring initial RTT . . . . . . . . . . . . . . . .  14
-   4.  Using the Spin Bit for Passive RTT Measurement  . . . . . . .  14
-     4.1.  Flow symmetry measurement . . . . . . . . . . . . . . . .  16
-   5.  Specific Network Management Tasks . . . . . . . . . . . . . .  16
-     5.1.  Stateful treatment of QUIC traffic  . . . . . . . . . . .  16
-     5.2.  Passive network performance measurement and
-           troubleshooting . . . . . . . . . . . . . . . . . . . . .  16
-     5.3.  Server cooperation with load balancers  . . . . . . . . .  16
-     5.4.  DDoS Detection and Mitigation . . . . . . . . . . . . . .  17
-     5.5.  Distinguishing acknowledgment traffic . . . . . . . . . .  17
-     5.6.  QoS support and ECMP  . . . . . . . . . . . . . . . . . .  17
-   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  18
-   7.  Security Considerations . . . . . . . . . . . . . . . . . . .  18
-   8.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  18
-   9.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  18
-   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  18
-     10.1.  Normative References . . . . . . . . . . . . . . . . . .  19
-     10.2.  Informative References . . . . . . . . . . . . . . . . .  19
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  20
+     3.6.  Flow symmetry measurement . . . . . . . . . . . . . . . .  14
+     3.7.  Round-Trip Time (RTT) Measurement . . . . . . . . . . . .  14
+       3.7.1.  Measuring initial RTT . . . . . . . . . . . . . . . .  15
+       3.7.2.  Using the Spin Bit for Passive RTT Measurement  . . .  15
+   4.  Specific Network Management Tasks . . . . . . . . . . . . . .  16
+     4.1.  Stateful treatment of QUIC traffic  . . . . . . . . . . .  17
+     4.2.  Passive network performance measurement and
+           troubleshooting . . . . . . . . . . . . . . . . . . . . .  17
+     4.3.  Server cooperation with load balancers  . . . . . . . . .  17
+     4.4.  DDoS Detection and Mitigation . . . . . . . . . . . . . .  17
+     4.5.  Distinguishing acknowledgment traffic . . . . . . . . . .  18
+     4.6.  QoS support and ECMP  . . . . . . . . . . . . . . . . . .  18
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  19
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  19
+   7.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  19
+   8.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  19
+   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  19
+     9.1.  Normative References  . . . . . . . . . . . . . . . . . .  19
+     9.2.  Informative References  . . . . . . . . . . . . . . . . .  19
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  21
+
+
+
+
+
+
+
+Kuehlewind & Trammell    Expires January 5, 2020                [Page 2]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
 
 1.  Introduction
 
    QUIC [QUIC-TRANSPORT] is a new transport protocol currently under
-   development in the IETF quic working group, focusing on support of
+   development in the IETF QUIC working group, focusing on support of
    semantics as needed for HTTP/2 [QUIC-HTTP].  Based on current
    deployment practices, QUIC is encapsulated in UDP and encrypted by
-
-
-
-Kuehlewind & Trammell   Expires October 25, 2019                [Page 2]
-
-Internet-Draft             QUIC Manageability                 April 2019
-
-
    default.  The current version of QUIC integrates TLS [QUIC-TLS] to
    encrypt all payload data and most control information.
 
@@ -133,9 +139,18 @@ Internet-Draft             QUIC Manageability                 April 2019
    also discusses how common network management practices will be
    impacted by QUIC.
 
-   Of course, network management is not a one-size-fits-all endeavour:
-   practices considered necessary or even mandatory within enterprise
-   networks with certain compliance requirements, for example, would be
+   Since QUIC's wire image [WIRE-IMAGE] is integrity protected and not
+   modifiable on path, in-network operations are not possible without
+   terminating the QUIC connection, for instance using a back-to-back
+   proxy.  Proxy operations are not in scope for this document.  QUIC
+   proxies must be fully-fledged QUIC endpoints, implementing the
+   transport as defined in [QUIC-TRANSPORT] and [QUIC-TLS] as well as
+   proxy-relevant semantics for the application(s) running over QUIC
+   (e.g.  HTTP/3 as defined in [QUIC-HTTP]).
+
+   Network management is not a one-size-fits-all endeavour: practices
+   considered necessary or even mandatory within enterprise networks
+   with certain compliance requirements, for example, would be
    impermissible on other networks without those requirements.  This
    document therefore does not make any specific recommendations as to
    which practices should or should not be applied; for each practice,
@@ -146,6 +161,14 @@ Internet-Draft             QUIC Manageability                 April 2019
    refers the state of the QUIC working group drafts as well as to
    changes under discussion, via issues and pull requests in GitHub
    current as of the time of writing.
+
+
+
+
+Kuehlewind & Trammell    Expires January 5, 2020                [Page 3]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
 
 1.1.  Notational Conventions
 
@@ -159,22 +182,14 @@ Internet-Draft             QUIC Manageability                 April 2019
 
    In this section, we discusses those aspects of the QUIC transport
    protocol that have an impact on the design and operation of devices
-   that forward QUIC packets.  Here, we are concerned primarily with
-   QUIC's unencrypted wire image [WIRE-IMAGE], which we define as the
-   information available in the packet header in each QUIC packet, and
-
-
-
-Kuehlewind & Trammell   Expires October 25, 2019                [Page 3]
-
-Internet-Draft             QUIC Manageability                 April 2019
-
-
-   the dynamics of that information.  Since QUIC is a versioned
-   protocol, the wire image of the header format can also change from
-   version to version.  However, at least the mechanism by which a
-   receiver can determine which version is used and the meaning and
-   location of fields used in the version negotiation process is
+   that forward QUIC packets.  Here, we are concerned primarily with the
+   unencrypted part of QUIC's wire image [WIRE-IMAGE], which we define
+   as the information available in the packet header in each QUIC
+   packet, and the dynamics of that information.  Since QUIC is a
+   versioned protocol, the wire image of the header format can also
+   change from version to version.  However, at least the mechanism by
+   which a receiver can determine which version is used and the meaning
+   and location of fields used in the version negotiation process is
    invariant [QUIC-INVARIANTS].
 
    This document is focused on the protocol as presently defined in
@@ -202,6 +217,15 @@ Internet-Draft             QUIC Manageability                 April 2019
 
    The following information is exposed in QUIC packet headers:
 
+
+
+
+
+Kuehlewind & Trammell    Expires January 5, 2020                [Page 4]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
+
    o  demux bit: the second most significant bit of the first octet
       every QUIC packet of the current version is set to 1, for
       demultiplexing with other UDP-encapsulated protocols.
@@ -209,7 +233,7 @@ Internet-Draft             QUIC Manageability                 April 2019
    o  latency spin bit: the third most significant bit of first octet in
       the short packet header.  The spin bit is set by endpoints such
       that tracking edge transitions can be used to passively observe
-      end-to-end RTT.  See Section 4 for further details.
+      end-to-end RTT.  See Section 3.7.2 for further details.
 
    o  header type: the long header has a 2 bit packet type field
       following the Header Form bit.  Header types correspond to stages
@@ -218,14 +242,6 @@ Internet-Draft             QUIC Manageability                 April 2019
    o  version number: the version number present in the long header, and
       identifies the version used for that packet.  Note that during
       Version Negotiation (see Section 2.8, and Section 17.2.1 of
-
-
-
-Kuehlewind & Trammell   Expires October 25, 2019                [Page 4]
-
-Internet-Draft             QUIC Manageability                 April 2019
-
-
       [QUIC-TRANSPORT], the version number field has a special value
       (0x00000000) that identifies the packet as a Version Negotiation
       packet.
@@ -234,7 +250,7 @@ Internet-Draft             QUIC Manageability                 April 2019
       headers carry a destination connection ID, a variable-length field
       that can be used to identify the connection associated with a QUIC
       packet, for load-balancing and NAT rebinding purposes; see
-      Section 5.3 and Section 2.6.  Long packet headers additionally
+      Section 4.3 and Section 2.6.  Long packet headers additionally
       carry a source connection ID.  The source connection ID
       corresponds to the destination connection ID the source would like
       to have on packets sent to it, and is only present on long packet
@@ -242,7 +258,7 @@ Internet-Draft             QUIC Manageability                 April 2019
       is also present; on short header packets, the length of the
       destination connection ID is implicit.
 
-   o  length: the length of the remaining quic packet after the length
+   o  length: the length of the remaining QUIC packet after the length
       field, present on long headers.  This field is used to implement
       coalesced packets during the handshake (see Section 2.2).
 
@@ -257,6 +273,15 @@ Internet-Draft             QUIC Manageability                 April 2019
    in any way.  For other kinds of packets, other information in the
    packet headers is cryptographically obfuscated:
 
+
+
+
+
+Kuehlewind & Trammell    Expires January 5, 2020                [Page 5]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
+
    o  packet number: Most packets (with the exception of Version
       Negotiation and Retry packets) have an associated packet number;
       however, this packet number is encrypted, and therefore not of use
@@ -270,18 +295,6 @@ Internet-Draft             QUIC Manageability                 April 2019
       the keys used to encrypt the packet, supporting key rotation.  The
       Key Phase bit is cryptographically obfuscated.
 
-
-
-
-
-
-
-
-Kuehlewind & Trammell   Expires October 25, 2019                [Page 5]
-
-Internet-Draft             QUIC Manageability                 April 2019
-
-
 2.2.  Coalesced Packets
 
    Multiple QUIC packets may be coalesced into a UDP datagram, with a
@@ -290,7 +303,7 @@ Internet-Draft             QUIC Manageability                 April 2019
    fields in the long headers are used to separate QUIC packets.  The
    length header field is variable length and its position in the header
    is also variable depending on the length of the source and
-   destionation connection ID.  See Section 4.6 of [QUIC-TRANSPORT].
+   destination connection ID.  See Section 4.6 of [QUIC-TRANSPORT].
 
 2.3.  Use of Port Numbers
 
@@ -316,7 +329,16 @@ Internet-Draft             QUIC Manageability                 April 2019
 
    To illustrate the information visible in the QUIC wire image during
    the handshake, we first show the general communication pattern
-   visible in the UDP datagams containing the QUIC handshake, then
+
+
+
+
+Kuehlewind & Trammell    Expires January 5, 2020                [Page 6]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
+
+   visible in the UDP datagrams containing the QUIC handshake, then
    examine each of the datagrams in detail.
 
    In the nominal case, the QUIC handshake can be recognized on the wire
@@ -330,13 +352,6 @@ Internet-Draft             QUIC Manageability                 April 2019
    contexts during the handshake are generally coalesced (see
    Section 2.2) in order to reduce the number of UDP datagrams sent
    during the handshake.
-
-
-
-Kuehlewind & Trammell   Expires October 25, 2019                [Page 6]
-
-Internet-Draft             QUIC Manageability                 April 2019
-
 
    As shown here, the client can send 0-RTT data as soon as it has sent
    its Client Hello, and the server can send 1-RTT data as soon as it
@@ -370,6 +385,15 @@ Internet-Draft             QUIC Manageability                 April 2019
    client's destination connection ID; they are therefore observable by
    any on-path device that knows the per-version constant; we therefore
    consider these as visible in our illustration.  The content of QUIC
+
+
+
+
+Kuehlewind & Trammell    Expires January 5, 2020                [Page 7]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
+
    Handshake packets are encrypted using keys established during the
    initial handshake exchange, and are therefore not visible.
 
@@ -378,21 +402,6 @@ Internet-Draft             QUIC Manageability                 April 2019
    Initial Completion Figure 4 and the Handshake Completion Figure 5
    datagrams finish these first two contexts, by sending the final
    acknowledgment and finishing the transmission of CRYPTO frames.
-
-
-
-
-
-
-
-
-
-
-
-Kuehlewind & Trammell   Expires October 25, 2019                [Page 7]
-
-Internet-Draft             QUIC Manageability                 April 2019
-
 
    +----------------------------------------------------------+
    | UDP header (source and destination UDP ports)            |
@@ -412,10 +421,34 @@ Internet-Draft             QUIC Manageability                 April 2019
    destination connection IDs, and information in the TLS Client Hello
    message, including any TLS Server Name Indication (SNI) present, in
    the clear.  The QUIC PADDING frame shown here may be present to
-   ensure the Client Hello datagram has a minumum size of 1200 octets,
+   ensure the Client Hello datagram has a minimum size of 1200 octets,
    to mitigate the possibility of handshake amplification.  Note that
    the location of PADDING is implementation-dependent, and PADDING
    frames may not appear in the Initial packet in a coalesced packet.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Kuehlewind & Trammell    Expires January 5, 2020                [Page 8]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
 
    +------------------------------------------------------------+
    | UDP header (source and destination UDP ports)              |
@@ -443,13 +476,6 @@ Internet-Draft             QUIC Manageability                 April 2019
    destination connection IDs, and information in the TLS Server Hello
    message.
 
-
-
-Kuehlewind & Trammell   Expires October 25, 2019                [Page 8]
-
-Internet-Draft             QUIC Manageability                 April 2019
-
-
    +------------------------------------------------------------+
    | UDP header (source and destination UDP ports)              |
    +------------------------------------------------------------+
@@ -471,7 +497,14 @@ Internet-Draft             QUIC Manageability                 April 2019
    The Initial Completion datagram does not expose any additional
    information; however, recognizing it can be used to determine that a
    handshake has completed (see Section 3.2), and for three-way
-   handshake RTT estimation as in Section 3.6.
+   handshake RTT estimation as in Section 3.7.
+
+
+
+Kuehlewind & Trammell    Expires January 5, 2020                [Page 9]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
 
    +------------------------------------------------------------+
    | UDP header (source and destination UDP ports)              |
@@ -487,24 +520,12 @@ Internet-Draft             QUIC Manageability                 April 2019
 
        Figure 5: Typical QUIC Handshake Completion datagram pattern
 
-   Similar to Initial Competion, Handshake Completion also exposes no
+   Similar to Initial Completion, Handshake Completion also exposes no
    additional information; observing it serves only to determine that
    the handshake has completed.
 
    When the client uses 0-RTT connection resumption, 0-RTT data may also
    be seen in the QUIC Client Hello datagram, as shown in Figure 6.
-
-
-
-
-
-
-
-
-Kuehlewind & Trammell   Expires October 25, 2019                [Page 9]
-
-Internet-Draft             QUIC Manageability                 April 2019
-
 
    +----------------------------------------------------------+
    | UDP header (source and destination UDP ports)            |
@@ -530,6 +551,17 @@ Internet-Draft             QUIC Manageability                 April 2019
    the 0-RTT data.  The amount of 0-RTT protected data is limited by the
    initial congestion window, typically around 10 packets [RFC6928].
 
+
+
+
+
+
+
+Kuehlewind & Trammell    Expires January 5, 2020               [Page 10]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
+
 2.5.  Integrity Protection of the Wire Image
 
    As soon as the cryptographic context is established, all information
@@ -553,15 +585,6 @@ Internet-Draft             QUIC Manageability                 April 2019
    handshake; typically, however, only the server will request a
    connection ID for the lifetime of the connection.  Connection IDs for
    either endpoint may change during the lifetime of a connection, with
-
-
-
-
-Kuehlewind & Trammell   Expires October 25, 2019               [Page 10]
-
-Internet-Draft             QUIC Manageability                 April 2019
-
-
    the new connection ID being negotiated via encrypted frames.  See
    Section 5.1 of [QUIC-TRANSPORT].
 
@@ -573,7 +596,7 @@ Internet-Draft             QUIC Manageability                 April 2019
    context establishment is specific to the QUIC version, while packet
    number protection on subsequent packets uses secrets derived from the
    end-to-end cryptographic context.  Packet numbers are therefore not
-   part of the wire image that is useful to on-path observers.
+   part of the wire image that is visible to on-path observers.
 
 2.8.  Version Negotiation and Greasing
 
@@ -587,6 +610,14 @@ Internet-Draft             QUIC Manageability                 April 2019
    Also note that the list of versions in the Version Negotiation packet
    may contain reserved versions.  This mechanism is used to avoid
    ossification in the implementation on the selection mechanism.
+
+
+
+Kuehlewind & Trammell    Expires January 5, 2020               [Page 11]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
+
    Further, a client may send a Initial Client packet with a reserved
    version number to trigger version negotiation.  In the Version
    Negotiation packet the connection ID and packet number of the Client
@@ -610,14 +641,6 @@ Internet-Draft             QUIC Manageability                 April 2019
    The only application binding currently defined for QUIC is HTTP
    [QUIC-HTTP].  HTTP over QUIC uses UDP port 443 by default, although
    URLs referring to resources available over HTTP over QUIC may specify
-
-
-
-Kuehlewind & Trammell   Expires October 25, 2019               [Page 11]
-
-Internet-Draft             QUIC Manageability                 April 2019
-
-
    alternate port numbers.  Simple assumptions about whether a given
    flow is using QUIC based upon a UDP port number may therefore not
    hold; see also [RFC7605] section 5.
@@ -638,9 +661,18 @@ Internet-Draft             QUIC Manageability                 April 2019
    implies acceptance of that version.
 
    Negotiated version cannot be identified for flows for which a
-   handshake is not observed, such as in the case of NAT rebinding;
-   however, these flows can be associated with flows for which a version
-   has been identified; see Section 3.4.
+   handshake is not observed, such as in the case of connection
+   migration; however, these flows can be associated with flows for
+   which a version has been identified; see Section 3.4.
+
+
+
+
+
+Kuehlewind & Trammell    Expires January 5, 2020               [Page 12]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
 
    In the rest of this section, we discuss only packets belonging to
    Version 1 QUIC flows, and assume that these packets have been
@@ -665,15 +697,6 @@ Internet-Draft             QUIC Manageability                 April 2019
    TCP.  A client using 0-RTT connection may also send data packets in
    0-RTT Protected packets directly after the Initial packet containing
    the TLS Client Hello.  Since these packets may be reordered in the
-
-
-
-
-Kuehlewind & Trammell   Expires October 25, 2019               [Page 12]
-
-Internet-Draft             QUIC Manageability                 April 2019
-
-
    network, note that 0-RTT Protected data packets may be seen before
    the Initial packet.
 
@@ -696,11 +719,16 @@ Internet-Draft             QUIC Manageability                 April 2019
    the connection continues.
 
    Work is currently underway in the TLS working group to encrypt the
-   SNI in TLS 1.3 [TLS-ENCRYPT-SNI], reducing the information available
-   in the SNI to the name of a fronting service, which can generally be
-   identified by the IP address of the server anyway.  If used with
-   QUIC, this would make SNI-based application identification impossible
-   through passive measurement.
+   SNI in TLS 1.3 [TLS-ESNI].  If used with QUIC, this would make SNI-
+   based application identification impossible through passive
+   measurement.
+
+
+
+Kuehlewind & Trammell    Expires January 5, 2020               [Page 13]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
 
 3.4.  Flow association
 
@@ -718,40 +746,50 @@ Internet-Draft             QUIC Manageability                 April 2019
    encrypted, packets with the same 5-tuple but different connection IDs
    may or may not belong to the same connection.
 
-   The connection ID value should be treated as opaque; see Section 5.3
+   The connection ID value should be treated as opaque; see Section 4.3
    for caveats regarding connection ID selection at servers.
-
-
-
-
-
-Kuehlewind & Trammell   Expires October 25, 2019               [Page 13]
-
-Internet-Draft             QUIC Manageability                 April 2019
-
 
 3.5.  Flow teardown
 
-   The QUIC does not expose the end of a connection; the only indication
-   to on-path devices that a flow has ended is that packets are no
-   longer observed.  Stateful devices on path such as NATs and firewalls
-   must therefore use idle timeouts to determine when to drop state for
-   QUIC flows.
+   QUIC does not expose the end of a connection; the only indication to
+   on-path devices that a flow has ended is that packets are no longer
+   observed.  Stateful devices on path such as NATs and firewalls must
+   therefore use idle timeouts to determine when to drop state for QUIC
+   flows.
 
    Changes to this behavior have been discussed in the working group,
    but there is no current proposal to implement these changes: see
    https://github.com/quicwg/base-drafts/issues/602.
 
-3.6.  Round-Trip Time (RTT) Measurement
+3.6.  Flow symmetry measurement
+
+   QUIC explicitly exposes which side of a connection is a client and
+   which side is a server during the handshake.  In addition, the
+   symmetry of a flow (whether primarily client-to-server, primarily
+   server-to-client, or roughly bidirectional, as input to basic traffic
+   classification techniques) can be inferred through the measurement of
+   data rate in each direction.  While QUIC traffic is protected and
+   ACKs may be padded, padding is not required.
+
+3.7.  Round-Trip Time (RTT) Measurement
 
    Round-trip time of QUIC flows can be inferred by observation once per
    flow, during the handshake, as in passive TCP measurement; this
    requires parsing of the QUIC packet header and recognition of the
    handshake, as illustrated in Section 2.4.  It can also be inferred
+
+
+
+
+Kuehlewind & Trammell    Expires January 5, 2020               [Page 14]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
+
    during the flow's lifetime, if the endpoints use the spin bit
    facility described below and in [QUIC-TRANSPORT], section 17.3.1.
 
-3.6.1.  Measuring initial RTT
+3.7.1.  Measuring initial RTT
 
    In the common case, the delay between the Initial packet containing
    the TLS Client Hello and the Handshake packet containing the TLS
@@ -765,10 +803,11 @@ Internet-Draft             QUIC Manageability                 April 2019
 
    Handshake RTT can be measured by adding the client-to-observer and
    observer-to-server RTT components together.  This measurement
-   necessarily includes any transport and application layer delay at
-   both sides.
+   necessarily includes any transport and application layer delay (the
+   latter mainly caused by the asymmetric crypto operations associated
+   with the TLS handshake) at both sides.
 
-4.  Using the Spin Bit for Passive RTT Measurement
+3.7.2.  Using the Spin Bit for Passive RTT Measurement
 
    The spin bit provides an additional method to measure per-flow RTT
    from observation points on the network path throughout the duration
@@ -777,20 +816,12 @@ Internet-Draft             QUIC Manageability                 April 2019
    version of QUIC, an endpoint can unilaterally choose to not support
    "spinning" the bit.  Use of the spin bit for RTT measurement by
    devices on path is only possible when both endpoints enable it.  Some
-   endpoints may disable use of the the spin bit by default, others only
-
-
-
-Kuehlewind & Trammell   Expires October 25, 2019               [Page 14]
-
-Internet-Draft             QUIC Manageability                 April 2019
-
-
-   in specific deployment scenarios, e.g. for servers and clients where
-   the RTT would reveal the presence of a VPN or proxy.  In order to not
-   make these connections identifiable based on the usage of the spin
-   bit, it is recommended that all endpoints disable "spinning" randomly
-   for at least one eighth of connections, even if otherwise enabled by
+   endpoints may disable use of the spin bit by default, others only in
+   specific deployment scenarios, e.g. for servers and clients where the
+   RTT would reveal the presence of a VPN or proxy.  To avoid making
+   these connections identifiable based on the usage of the spin bit, it
+   is recommended that all endpoints randomly disable "spinning" for at
+   least one eighth of connections, even if otherwise enabled by
    default.  An endpoint not participating in spin bit signaling for a
    given connection can use a fixed spin value for the duration of the
    connection, or can set the bit randomly on each packet sent.
@@ -803,6 +834,14 @@ Internet-Draft             QUIC Manageability                 April 2019
 
    Note that this measurement, as with passive RTT measurement for TCP,
    includes any transport protocol delay (e.g., delayed sending of
+
+
+
+Kuehlewind & Trammell    Expires January 5, 2020               [Page 15]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
+
    acknowledgements) and/or application layer delay (e.g., waiting for a
    response to be generated).  It therefore provides devices on path a
    good instantaneous estimate of the RTT as experienced by the
@@ -822,8 +861,8 @@ Internet-Draft             QUIC Manageability                 April 2019
    packets that advance the largest packet number, signal generation
    itself is resistant to reordering.  However, reordering can cause
    problems at an observer by causing spurious edge detection and
-   therefore low RTT estimates, if reordering occurs across a spin-bit
-   flip in the stream.
+   therefore inaccurate (i.e., lower) RTT estimates, if reordering
+   occurs across a spin-bit flip in the stream.
 
    Simple heuristics based on the observed data rate per flow or changes
    in the RTT series can be used to reject bad RTT samples due to lost
@@ -834,14 +873,6 @@ Internet-Draft             QUIC Manageability                 April 2019
    given flow.  Usually such heuristics would also detect if the spin is
    either constant or randomly set for a connection.
 
-
-
-
-Kuehlewind & Trammell   Expires October 25, 2019               [Page 15]
-
-Internet-Draft             QUIC Manageability                 April 2019
-
-
    An on-path observer that can see traffic in both directions (from
    client to server and from server to client) can also use the spin bit
    to measure "upstream" and "downstream" component RTT; i.e, the
@@ -851,39 +882,46 @@ Internet-Draft             QUIC Manageability                 April 2019
    edge observed in the upstream direction and that observed in the
    downstream direction, and vice versa.
 
-4.1.  Flow symmetry measurement
+4.  Specific Network Management Tasks
 
-   QUIC explicitly exposes which side of a connection is a client and
-   which side is a server during the handshake.  In addition, the
-   symmerty of a flow (whether primarily client-to-server, primarily
-   server-to-client, or roughly bidirectional, as input to basic traffic
-   classification techniques) can be inferred through the measurement of
-   data rate in each direction.  While QUIC traffic is protected and
-   ACKS may be padded, padding is not required.
-
-5.  Specific Network Management Tasks
-
-   In this section, we address specific network management and
+   In this section, we review specific network management and
    measurement techniques and how QUIC's design impacts them.
 
-5.1.  Stateful treatment of QUIC traffic
 
-   Stateful treatment of QUIC traffic is possible through QUIC traffic
-   and version identification (Section 3.1) and observation of the
-   handshake for connection confirmation (Section 3.2).  The lack of any
-   visible end-of-flow signal (Section 3.5) means that this state must
-   be purged either through timers or through least-recently-used
-   eviction, depending on application requirements.
 
-5.2.  Passive network performance measurement and troubleshooting
+
+
+
+
+Kuehlewind & Trammell    Expires January 5, 2020               [Page 16]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
+
+4.1.  Stateful treatment of QUIC traffic
+
+   Stateful treatment of QUIC traffic (e.g., at a firewall or NAT
+   middlebox) is possible through QUIC traffic and version
+   identification (Section 3.1) and observation of the handshake for
+   connection confirmation (Section 3.2).  The lack of any visible end-
+   of-flow signal (Section 3.5) means that this state must be purged
+   either through timers or through least-recently-used eviction,
+   depending on application requirements.
+
+   The QUIC header optionally contains a Connection ID which can be used
+   as additional entropy beyond the 5-tuple, if needed.  The QUIC
+   handshake needs to be observed in order to understand whether the
+   Connection ID is present and what length it has.
+
+4.2.  Passive network performance measurement and troubleshooting
 
    Limited RTT measurement is possible by passive observation of QUIC
-   traffic; see Section 3.6.  No passive measurement of loss is possible
+   traffic; see Section 3.7.  No passive measurement of loss is possible
    with the present wire image.  Extremely limited observation of
    upstream congestion may be possible via the observation of CE
    markings on ECN-enabled QUIC traffic.
 
-5.3.  Server cooperation with load balancers
+4.3.  Server cooperation with load balancers
 
    In the case of content distribution networking architectures
    including load balancers, the connection ID provides a way for the
@@ -891,14 +929,7 @@ Internet-Draft             QUIC Manageability                 April 2019
    the load balancers.  Guidance on assigning connection IDs is given in
    [QUIC-APPLICABILITY].
 
-
-
-Kuehlewind & Trammell   Expires October 25, 2019               [Page 16]
-
-Internet-Draft             QUIC Manageability                 April 2019
-
-
-5.4.  DDoS Detection and Mitigation
+4.4.  DDoS Detection and Mitigation
 
    Current practices in detection and mitigation of Distributed Denial
    of Service (DDoS) attacks generally involve passive measurement using
@@ -908,13 +939,21 @@ Internet-Draft             QUIC Manageability                 April 2019
    efficient classification of this traffic.
 
    Limited first-packet garbage detection as in Section 3.1.2 and
-   stateful tracking of QUIC traffic as in Section 5.1 above can be used
+   stateful tracking of QUIC traffic as in Section 4.1 above can be used
    in this classification step.
 
    Note that the use of a connection ID to support connection migration
    renders 5-tuple based filtering insufficient, and requires more state
    to be maintained by DDoS defense systems, and linkability resistance
    in connection ID update mechanisms means that a connection ID aware
+
+
+
+Kuehlewind & Trammell    Expires January 5, 2020               [Page 17]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
+
    DDoS defense system must have the same information about flows as the
    load balancer.
 
@@ -925,7 +964,7 @@ Internet-Draft             QUIC Manageability                 April 2019
    attack.  However, a defense system might simply rely on the fast
    resumption mechanism provided by QUIC.
 
-5.5.  Distinguishing acknowledgment traffic
+4.5.  Distinguishing acknowledgment traffic
 
    Some deployed in-network functions distinguish pure-acknowledgment
    (ACK) packets from packets carrying upper-layer data in order to
@@ -938,7 +977,7 @@ Internet-Draft             QUIC Manageability                 April 2019
    packets based on packet size are likely to fail, and are emphatically
    NOT RECOMMENDED.
 
-5.6.  QoS support and ECMP
+4.6.  QoS support and ECMP
 
    [EDITOR'S NOTE: this is a bit speculative; keep?]
 
@@ -946,14 +985,6 @@ Internet-Draft             QUIC Manageability                 April 2019
    Quality of Service (QoS) provided from the network.  QUIC assumes
    that all packets with the same 5-tuple {dest addr, source addr,
    protocol, dest port, source port} will receive similar network
-
-
-
-Kuehlewind & Trammell   Expires October 25, 2019               [Page 17]
-
-Internet-Draft             QUIC Manageability                 April 2019
-
-
    treatment.  That means all stream that are multiplexed over the same
    QUIC connection require the same network treatment and are handled by
    the same congestion controller.  If differential network treatment is
@@ -972,24 +1003,31 @@ Internet-Draft             QUIC Manageability                 April 2019
    connection ID if present) matching is still beneficial for QoS given
    all packets are handled by the same congestion controller.
 
-6.  IANA Considerations
+
+
+Kuehlewind & Trammell    Expires January 5, 2020               [Page 18]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
+
+5.  IANA Considerations
 
    This document has no actions for IANA.
 
-7.  Security Considerations
+6.  Security Considerations
 
    Supporting manageability of QUIC traffic inherently involves
    tradeoffs with the confidentiality of QUIC's control information;
    this entire document is therefore security-relevant.
 
-8.  Contributors
+7.  Contributors
 
-   Dan Druta contributed text to Section 5.4.  Igor Lubashev contributed
-   text to Section 5.3 on the use of the connection ID for load
-   balancing.  Marcus Ilhar contributed text to Section 3.6 on the use
+   Dan Druta contributed text to Section 4.4.  Igor Lubashev contributed
+   text to Section 4.3 on the use of the connection ID for load
+   balancing.  Marcus Ilhar contributed text to Section 3.7 on the use
    of the spin bit.
 
-9.  Acknowledgments
+8.  Acknowledgments
 
    This work is partially supported by the European Commission under
    Horizon 2020 grant agreement no. 688421 Measurement and Architecture
@@ -997,20 +1035,9 @@ Internet-Draft             QUIC Manageability                 April 2019
    for Education, Research, and Innovation under contract no. 15.0268.
    This support does not imply endorsement.
 
-10.  References
+9.  References
 
-
-
-
-
-
-
-Kuehlewind & Trammell   Expires October 25, 2019               [Page 18]
-
-Internet-Draft             QUIC Manageability                 April 2019
-
-
-10.1.  Normative References
+9.1.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -1021,7 +1048,7 @@ Internet-Draft             QUIC Manageability                 April 2019
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
 
-10.2.  Informative References
+9.2.  Informative References
 
    [Ding2015]
               Ding, H. and M. Rabinovich, "TCP Stretch Acknowledgments
@@ -1030,19 +1057,28 @@ Internet-Draft             QUIC Manageability                 April 2019
               2015, <http://www.sigcomm.org/sites/default/files/ccr/
               papers/2015/July/0000000-0000002.pdf>.
 
+
+
+
+
+Kuehlewind & Trammell    Expires January 5, 2020               [Page 19]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
+
    [IPIM]     Allman, M., Beverly, R., and B. Trammell, "In-Protocol
               Internet Measurement (arXiv preprint 1612.02902)",
               December 2016, <https://arxiv.org/abs/1612.02902>.
 
    [QUIC-APPLICABILITY]
               Kuehlewind, M. and B. Trammell, "Applicability of the QUIC
-              Transport Protocol", draft-ietf-quic-applicability-03
-              (work in progress), October 2018.
+              Transport Protocol", draft-ietf-quic-applicability-04
+              (work in progress), April 2019.
 
    [QUIC-HTTP]
               Bishop, M., "Hypertext Transfer Protocol Version 3
-              (HTTP/3)", draft-ietf-quic-http-19 (work in progress),
-              March 2019.
+              (HTTP/3)", draft-ietf-quic-http-20 (work in progress),
+              April 2019.
 
    [QUIC-INVARIANTS]
               Thomson, M., "Version-Independent Properties of QUIC",
@@ -1051,20 +1087,12 @@ Internet-Draft             QUIC Manageability                 April 2019
 
    [QUIC-TLS]
               Thomson, M. and S. Turner, "Using TLS to Secure QUIC",
-              draft-ietf-quic-tls-19 (work in progress), March 2019.
+              draft-ietf-quic-tls-20 (work in progress), April 2019.
 
    [QUIC-TRANSPORT]
               Iyengar, J. and M. Thomson, "QUIC: A UDP-Based Multiplexed
-              and Secure Transport", draft-ietf-quic-transport-19 (work
-              in progress), March 2019.
-
-
-
-
-Kuehlewind & Trammell   Expires October 25, 2019               [Page 19]
-
-Internet-Draft             QUIC Manageability                 April 2019
-
+              and Secure Transport", draft-ietf-quic-transport-20 (work
+              in progress), April 2019.
 
    [RFC6066]  Eastlake 3rd, D., "Transport Layer Security (TLS)
               Extensions: Extension Definitions", RFC 6066,
@@ -1087,14 +1115,21 @@ Internet-Draft             QUIC Manageability                 April 2019
               Negotiation Extension", RFC 7301, DOI 10.17487/RFC7301,
               July 2014, <https://www.rfc-editor.org/info/rfc7301>.
 
+
+
+Kuehlewind & Trammell    Expires January 5, 2020               [Page 20]
+
+Internet-Draft             QUIC Manageability                  July 2019
+
+
    [RFC7605]  Touch, J., "Recommendations on Using Assigned Transport
               Port Numbers", BCP 165, RFC 7605, DOI 10.17487/RFC7605,
               August 2015, <https://www.rfc-editor.org/info/rfc7605>.
 
-   [TLS-ENCRYPT-SNI]
-              Huitema, C. and E. Rescorla, "Issues and Requirements for
-              SNI Encryption in TLS", draft-ietf-tls-sni-encryption-04
-              (work in progress), November 2018.
+   [TLS-ESNI]
+              Rescorla, E., Oku, K., Sullivan, N., and C. Wood,
+              "Encrypted Server Name Indication for TLS 1.3", draft-
+              ietf-tls-esni-03 (work in progress), March 2019.
 
    [TMA-QOF]  Trammell, B., Gugelmann, D., and N. Brownlee, "Inline Data
               Integrity Signals for Passive Measurement (in Proc. TMA
@@ -1102,30 +1137,21 @@ Internet-Draft             QUIC Manageability                 April 2019
 
    [WIRE-IMAGE]
               Trammell, B. and M. Kuehlewind, "The Wire Image of a
-              Network Protocol", draft-trammell-wire-image-04 (work in
-              progress), April 2018.
+              Network Protocol", RFC 8546, DOI 10.17487/RFC8546, April
+              2019, <https://www.rfc-editor.org/info/rfc8546>.
 
 Authors' Addresses
 
    Mirja Kuehlewind
-   ETH Zurich
-   Gloriastrasse 35
-   8092 Zurich
-   Switzerland
+   Ericsson
 
-   Email: mirja.kuehlewind@tik.ee.ethz.ch
-
-
-
-Kuehlewind & Trammell   Expires October 25, 2019               [Page 20]
-
-Internet-Draft             QUIC Manageability                 April 2019
+   Email: mirja.kuehlewind@ericsson.com
 
 
    Brian Trammell
-   ETH Zurich
-   Gloriastrasse 35
-   8092 Zurich
+   Google
+   Gustav-Gull-Platz 1
+   8004 Zurich
    Switzerland
 
    Email: ietf@trammell.ch
@@ -1147,30 +1173,4 @@ Internet-Draft             QUIC Manageability                 April 2019
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Kuehlewind & Trammell   Expires October 25, 2019               [Page 21]
+Kuehlewind & Trammell    Expires January 5, 2020               [Page 21]
